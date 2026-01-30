@@ -1,0 +1,1586 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ryt-style Transfer Prototype (Youthful + Calm)</title>
+    <style>
+        :root {
+            /* Your palette + supporting neutrals */
+            --bg: #ffffff;
+            --surface: #ffffff;
+            --surface2: #f7faff;
+            /* barely-blue surface */
+            --border: #e6eef6;
+
+            --tint: #a6d9fa;
+            /* your light blue */
+            --plum: #300a14;
+            /* your prune/plum */
+            --action: #2563eb;
+            /* deeper action blue for accessibility */
+            --action2: #1d4ed8;
+
+            --text: #0f172a;
+            /* near-black */
+            --muted: #475569;
+            --muted2: #94a3b8;
+
+            --success: #16a34a;
+            --danger: #dc2626;
+
+            --radius: 18px;
+            --radius2: 24px;
+
+            --shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+            --shadow2: 0 10px 26px rgba(15, 23, 42, 0.06);
+
+            --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial,
+                "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: radial-gradient(1100px 700px at 50% -12%, rgba(166, 217, 250, 0.55), transparent 55%),
+                linear-gradient(180deg, rgba(247, 250, 255, 1), rgba(255, 255, 255, 1) 52%);
+            font-family: var(--font);
+            color: var(--text);
+        }
+
+        /* Phone frame */
+        .phone {
+            width: min(430px, 100%);
+            margin: 18px auto 28px;
+            padding: 14px 14px 18px;
+        }
+
+        .app {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(230, 238, 246, 0.9);
+            box-shadow: var(--shadow);
+            border-radius: 30px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .topSafe {
+            padding: 14px 16px 10px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, rgba(166, 217, 250, 0.75), rgba(166, 217, 250, 0.25));
+            border: 1px solid rgba(230, 238, 246, 1);
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+            color: var(--plum);
+        }
+
+        .pill {
+            flex: 1;
+            height: 38px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(166, 217, 250, 0.35), rgba(48, 10, 20, 0.06));
+            border: 1px solid rgba(230, 238, 246, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--text);
+            font-weight: 650;
+            letter-spacing: 0.2px;
+            user-select: none;
+        }
+
+        .pill .spark {
+            width: 18px;
+            height: 18px;
+            border-radius: 6px;
+            background: rgba(48, 10, 20, 0.08);
+            display: grid;
+            place-items: center;
+            color: var(--plum);
+            font-weight: 800;
+            font-size: 12px;
+        }
+
+        .iconBtn {
+            width: 38px;
+            height: 38px;
+            border-radius: 999px;
+            border: 1px solid rgba(230, 238, 246, 1);
+            background: rgba(255, 255, 255, 0.9);
+            display: grid;
+            place-items: center;
+            box-shadow: var(--shadow2);
+            cursor: pointer;
+        }
+
+        .dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--danger);
+            transform: translate(10px, -10px);
+        }
+
+        .content {
+            padding: 0 16px 14px;
+            min-height: 720px;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeUp 240ms ease-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Components */
+        .card {
+            background: var(--surface);
+            border: 1px solid rgba(230, 238, 246, 1);
+            border-radius: var(--radius2);
+            box-shadow: var(--shadow2);
+        }
+
+        .balanceCard {
+            padding: 18px;
+            margin-top: 10px;
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .subtle {
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .balance {
+            font-size: 44px;
+            letter-spacing: -1px;
+            font-weight: 850;
+            margin: 8px 0 0;
+        }
+
+        .small {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .earned {
+            margin-top: 6px;
+            font-weight: 700;
+            color: var(--muted);
+        }
+
+        .earned b {
+            color: var(--success);
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 14px;
+            margin-top: 12px;
+        }
+
+        .actionTile {
+            border-radius: 18px;
+            border: 1px solid rgba(230, 238, 246, 1);
+            background: linear-gradient(180deg, rgba(247, 250, 255, 1), rgba(255, 255, 255, 1));
+            padding: 12px 10px;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 120ms ease, border-color 120ms ease;
+        }
+
+        .actionTile:hover {
+            transform: translateY(-1px);
+            border-color: rgba(166, 217, 250, 0.9);
+        }
+
+        .actionIcon {
+            width: 44px;
+            height: 44px;
+            border-radius: 16px;
+            margin: 0 auto 10px;
+            display: grid;
+            place-items: center;
+            color: var(--plum);
+            background: rgba(166, 217, 250, 0.35);
+            border: 1px solid rgba(166, 217, 250, 0.55);
+            font-weight: 900;
+        }
+
+        .actionLabel {
+            font-size: 12px;
+            color: var(--text);
+            font-weight: 800;
+        }
+
+        .banner {
+            margin-top: 14px;
+            padding: 14px;
+            border-radius: 22px;
+            border: 1px solid rgba(230, 238, 246, 1);
+            background: linear-gradient(90deg,
+                    rgba(166, 217, 250, 0.32),
+                    rgba(48, 10, 20, 0.05),
+                    rgba(37, 99, 235, 0.08));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .banner h4 {
+            margin: 0;
+            font-size: 14px;
+            letter-spacing: 0.2px;
+        }
+
+        .banner p {
+            margin: 6px 0 0;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .btn {
+            border: 0;
+            cursor: pointer;
+            border-radius: 999px;
+            padding: 12px 16px;
+            font-weight: 850;
+            letter-spacing: 0.2px;
+        }
+
+        .btnPrimary {
+            background: linear-gradient(180deg, var(--action), var(--action2));
+            color: white;
+            box-shadow: 0 12px 26px rgba(37, 99, 235, 0.22);
+        }
+
+        .btnGhost {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(230, 238, 246, 1);
+            color: var(--text);
+        }
+
+        .btnDanger {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.25);
+            color: var(--danger);
+        }
+
+        .btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        .sectionTitle {
+            margin: 18px 2px 10px;
+            font-size: 14px;
+            color: var(--muted);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        .input {
+            width: 100%;
+            padding: 14px 14px;
+            border-radius: 16px;
+            border: 1px solid rgba(230, 238, 246, 1);
+            background: rgba(255, 255, 255, 0.9);
+            outline: none;
+            font-size: 14px;
+            font-weight: 650;
+        }
+
+        .input:focus {
+            border-color: rgba(166, 217, 250, 1);
+            box-shadow: 0 0 0 4px rgba(166, 217, 250, 0.35);
+        }
+
+        .seg {
+            margin-top: 12px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .segBtn {
+            padding: 12px 10px;
+            border-radius: 18px;
+            border: 1px solid rgba(230, 238, 246, 1);
+            background: rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+            text-align: center;
+            font-weight: 850;
+            color: var(--text);
+        }
+
+        .segBtn.active {
+            border-color: rgba(166, 217, 250, 1);
+            background: rgba(166, 217, 250, 0.25);
+            color: var(--plum);
+        }
+
+        .segBtn small {
+            display: block;
+            margin-top: 4px;
+            font-weight: 650;
+            color: var(--muted);
+            letter-spacing: 0;
+        }
+
+        .list {
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .listItem {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 14px;
+            border-top: 1px solid rgba(230, 238, 246, 1);
+        }
+
+        .listItem:first-child {
+            border-top: 0;
+        }
+
+        .liLeft {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .badge {
+            width: 42px;
+            height: 42px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            background: rgba(166, 217, 250, 0.28);
+            border: 1px solid rgba(166, 217, 250, 0.5);
+            font-weight: 900;
+            color: var(--plum);
+            flex: 0 0 auto;
+        }
+
+        .liText {
+            min-width: 0;
+        }
+
+        .liTitle {
+            font-weight: 900;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .liSub {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chev {
+            color: var(--muted2);
+            font-weight: 900;
+            font-size: 18px;
+        }
+
+        .headerRow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 6px;
+            margin-bottom: 12px;
+        }
+
+        .back {
+            cursor: pointer;
+            font-weight: 900;
+            color: var(--text);
+            border-radius: 999px;
+            padding: 8px 10px;
+            border: 1px solid rgba(230, 238, 246, 1);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 950;
+            letter-spacing: -0.6px;
+            margin: 0;
+        }
+
+        .chips {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .chip {
+            padding: 10px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(230, 238, 246, 1);
+            background: rgba(255, 255, 255, 0.9);
+            font-weight: 850;
+            cursor: pointer;
+        }
+
+        .chip.active {
+            border-color: rgba(166, 217, 250, 1);
+            background: rgba(166, 217, 250, 0.25);
+            color: var(--plum);
+        }
+
+        .footerCta {
+            padding: 14px 16px 18px;
+            position: sticky;
+            bottom: 0;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 35%);
+            backdrop-filter: blur(8px);
+        }
+
+        .bottomNav {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            padding: 12px 10px 14px;
+            border-top: 1px solid rgba(230, 238, 246, 1);
+            background: rgba(255, 255, 255, 0.96);
+        }
+
+        .navItem {
+            text-align: center;
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 800;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .navDot {
+            width: 36px;
+            height: 36px;
+            margin: 0 auto 6px;
+            border-radius: 14px;
+            background: rgba(166, 217, 250, 0.25);
+            border: 1px solid rgba(230, 238, 246, 1);
+            display: grid;
+            place-items: center;
+            color: var(--plum);
+            font-weight: 900;
+        }
+
+        .navItem.active {
+            color: var(--plum);
+        }
+
+        .navItem.active .navDot {
+            background: rgba(166, 217, 250, 0.35);
+            border-color: rgba(166, 217, 250, 0.9);
+        }
+
+        /* Amount screen */
+        .amountHero {
+            padding: 18px;
+            border-radius: 26px;
+            border: 1px solid rgba(230, 238, 246, 1);
+            background: linear-gradient(180deg,
+                    rgba(166, 217, 250, 0.25),
+                    rgba(255, 255, 255, 0.92) 45%);
+        }
+
+        .amountTo {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .amountTo .who {
+            min-width: 0;
+        }
+
+        .amountTo .who strong {
+            display: block;
+            font-weight: 950;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .amountTo .who span {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .amountBig {
+            font-size: 54px;
+            font-weight: 950;
+            letter-spacing: -1.2px;
+            margin: 12px 0 4px;
+        }
+
+        .afterRow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--muted);
+            font-weight: 750;
+            font-size: 13px;
+        }
+
+        .keypad {
+            margin-top: 12px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .key {
+            padding: 18px 12px;
+            border-radius: 18px;
+            border: 1px solid rgba(230, 238, 246, 1);
+            background: rgba(255, 255, 255, 0.95);
+            font-weight: 950;
+            font-size: 20px;
+            cursor: pointer;
+            user-select: none;
+            text-align: center;
+            box-shadow: var(--shadow2);
+        }
+
+        .key:active {
+            transform: translateY(1px);
+        }
+
+        .key.muted {
+            color: var(--muted);
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+        /* Modal */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.35);
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 16px;
+            z-index: 50;
+        }
+
+        .overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            width: 100%;
+            border-radius: 26px;
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid rgba(230, 238, 246, 1);
+            box-shadow: var(--shadow);
+            padding: 16px;
+            animation: pop 180ms ease-out;
+        }
+
+        @keyframes pop {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modalHeader {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .bioIcon {
+            width: 46px;
+            height: 46px;
+            border-radius: 18px;
+            background: rgba(166, 217, 250, 0.35);
+            border: 1px solid rgba(166, 217, 250, 0.7);
+            display: grid;
+            place-items: center;
+            font-weight: 950;
+            color: var(--plum);
+        }
+
+        .modal h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 950;
+        }
+
+        .modal p {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-weight: 650;
+            font-size: 13px;
+        }
+
+        .modalActions {
+            margin-top: 14px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        /* Transferring */
+        .center {
+            text-align: center;
+            padding: 40px 18px;
+        }
+
+        .rocket {
+            width: 120px;
+            height: 120px;
+            border-radius: 40px;
+            margin: 22px auto 14px;
+            background: linear-gradient(180deg, rgba(166, 217, 250, 0.35), rgba(48, 10, 20, 0.05));
+            border: 1px solid rgba(230, 238, 246, 1);
+            display: grid;
+            place-items: center;
+            font-size: 54px;
+            color: var(--plum);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .rocket::after {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 30% 30%, rgba(37, 99, 235, 0.22), transparent 55%);
+            transform: translate(10px, 10px);
+            animation: drift 1.4s ease-in-out infinite alternate;
+        }
+
+        @keyframes drift {
+            from {
+                transform: translate(22px, 18px);
+            }
+
+            to {
+                transform: translate(-10px, -16px);
+            }
+        }
+
+        /* Success */
+        .checkRing {
+            width: 132px;
+            height: 132px;
+            border-radius: 999px;
+            margin: 12px auto 12px;
+            display: grid;
+            place-items: center;
+            background: radial-gradient(circle at 35% 30%, rgba(166, 217, 250, 0.55), rgba(22, 163, 74, 0.12));
+            border: 2px solid rgba(22, 163, 74, 0.25);
+            box-shadow: 0 18px 40px rgba(22, 163, 74, 0.12);
+            font-size: 56px;
+            color: var(--success);
+            font-weight: 950;
+        }
+
+        .receipt {
+            padding: 14px;
+            margin-top: 14px;
+        }
+
+        .kv {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 0;
+            border-top: 1px solid rgba(230, 238, 246, 1);
+        }
+
+        .kv:first-child {
+            border-top: 0;
+            padding-top: 0;
+        }
+
+        .k {
+            color: var(--muted);
+            font-weight: 750;
+        }
+
+        .v {
+            font-weight: 950;
+            text-align: right;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 8px;
+        }
+
+        /* Utility */
+        .spacer8 {
+            height: 8px;
+        }
+
+        .spacer12 {
+            height: 12px;
+        }
+
+        .spacer16 {
+            height: 16px;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+                "Courier New", monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="phone">
+        <div class="app">
+            <div class="topSafe">
+                <div class="topbar">
+                    <div class="avatar" title="Profile">AA</div>
+                    <div class="pill" title="Ask AI">
+                        <span class="spark">✦</span>
+                        Ask Ryt AI
+                    </div>
+                    <div class="iconBtn" title="Notifications" style="position: relative">
+                        🔔
+                        <span class="dot" aria-hidden="true"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- HOME -->
+                <section class="screen active" id="screen-home">
+                    <div class="card balanceCard">
+                        <div class="row">
+                            <div class="subtle">Total balance</div>
+                            <div class="subtle">▾</div>
+                        </div>
+
+                        <div class="row" style="align-items: baseline; margin-top: 8px">
+                            <div class="balance" id="balanceText">RM 100.00</div>
+                            <div class="iconBtn" title="Show/Hide Balance" id="toggleBalance">👁️</div>
+                        </div>
+
+                        <div class="earned">Interest earned <b>+RM 0.00</b></div>
+
+                        <div class="actions">
+                            <div class="actionTile" role="button" aria-label="Scan">
+                                <div class="actionIcon">⌁</div>
+                                <div class="actionLabel">Scan</div>
+                            </div>
+                            <div class="actionTile" role="button" aria-label="Add money">
+                                <div class="actionIcon">＋</div>
+                                <div class="actionLabel">Add money</div>
+                            </div>
+                            <div class="actionTile" role="button" aria-label="Receive">
+                                <div class="actionIcon">↙</div>
+                                <div class="actionLabel">Receive</div>
+                            </div>
+                            <div class="actionTile" role="button" aria-label="Transfer" data-go="screen-transfer">
+                                <div class="actionIcon">↗</div>
+                                <div class="actionLabel">Transfer</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="banner">
+                        <div>
+                            <h4>Smart transfers (calm mode)</h4>
+                            <p>Type a name or account — we’ll format the details nicely.</p>
+                        </div>
+                        <button class="btn btnPrimary" data-go="screen-transfer">Try</button>
+                    </div>
+
+                    <div class="sectionTitle">Promotions</div>
+                    <div class="seg">
+                        <div class="segBtn" style="text-align: left">
+                            Invite
+                            <small>Up to 4% p.a. paid daily</small>
+                        </div>
+                        <div class="segBtn" style="text-align: left">
+                            Ryt Card
+                            <small>Order a physical card</small>
+                        </div>
+                        <div class="segBtn" style="text-align: left">
+                            Insights
+                            <small>Track spending calm</small>
+                        </div>
+                    </div>
+
+                    <div class="spacer16"></div>
+                </section>
+
+                <!-- TRANSFER -->
+                <section class="screen" id="screen-transfer">
+                    <div class="headerRow">
+                        <div class="back" data-back="screen-home">←</div>
+                        <h1 class="title">Transfer</h1>
+                        <div class="iconBtn" title="Schedule">🗓️</div>
+                    </div>
+
+                    <input class="input" id="transferSearch" placeholder="Search name or mobile number" />
+
+                    <div class="seg" style="margin-top: 12px">
+                        <div class="segBtn active" data-mode="bank">
+                            Bank / eWallet
+                            <small>To bank account</small>
+                        </div>
+                        <div class="segBtn" data-mode="mobile">
+                            Mobile
+                            <small>To phone number</small>
+                        </div>
+                        <div class="segBtn" data-mode="other">
+                            Others
+                            <small>Pay bills</small>
+                        </div>
+                    </div>
+
+                    <div class="banner" style="margin-top: 12px">
+                        <div>
+                            <h4>Smart transfers with Ryt AI</h4>
+                            <p>“Pay Adam RM 10” — we’ll prefill the flow.</p>
+                        </div>
+                        <button class="btn btnGhost" id="smartPrefill">Try →</button>
+                    </div>
+
+                    <div class="sectionTitle">Recent</div>
+                    <div class="card list" id="recentList">
+                        <div class="listItem">
+                            <div class="liLeft">
+                                <div class="badge">A</div>
+                                <div class="liText">
+                                    <div class="liTitle">Adam</div>
+                                    <div class="liSub">+60 19 242 8411</div>
+                                </div>
+                            </div>
+                            <div class="chev">›</div>
+                        </div>
+                        <div class="listItem">
+                            <div class="liLeft">
+                                <div class="badge">AK</div>
+                                <div class="liText">
+                                    <div class="liTitle">Adly Kollect</div>
+                                    <div class="liSub">+60 10 232 4007</div>
+                                </div>
+                            </div>
+                            <div class="chev">›</div>
+                        </div>
+                        <div class="listItem">
+                            <div class="liLeft">
+                                <div class="badge">AE</div>
+                                <div class="liText">
+                                    <div class="liTitle">Aizat ECV</div>
+                                    <div class="liSub">+60 11 2871 0060</div>
+                                </div>
+                            </div>
+                            <div class="chev">›</div>
+                        </div>
+                    </div>
+
+                    <div class="footerCta">
+                        <button class="btn btnPrimary" style="width: 100%" data-go="screen-banklist">
+                            Choose bank / eWallet
+                        </button>
+                    </div>
+                </section>
+
+                <!-- BANK LIST -->
+                <section class="screen" id="screen-banklist">
+                    <div class="headerRow">
+                        <div class="back" data-back="screen-transfer">←</div>
+                        <h1 class="title">Select bank</h1>
+                        <div class="iconBtn" title="Search">🔍</div>
+                    </div>
+
+                    <input class="input" id="bankSearch" placeholder="Search bank / eWallet" />
+
+                    <div class="banner" style="margin-top: 12px">
+                        <div>
+                            <h4>Still typing account details?</h4>
+                            <p>Snap & pay (demo banner, optional).</p>
+                        </div>
+                        <button class="btn btnPrimary" disabled>Try now</button>
+                    </div>
+
+                    <div class="sectionTitle">Popular</div>
+                    <div class="card list" id="bankList"></div>
+                </section>
+
+                <!-- ACCOUNT DETAILS -->
+                <section class="screen" id="screen-account">
+                    <div class="headerRow">
+                        <div class="back" data-back="screen-banklist">←</div>
+                        <h1 class="title">Details</h1>
+                        <div class="iconBtn" title="Help">?</div>
+                    </div>
+
+                    <div class="card" style="padding: 14px">
+                        <div class="row">
+                            <div class="liLeft">
+                                <div class="badge" id="selectedBankBadge">B</div>
+                                <div class="liText">
+                                    <div class="liTitle" id="selectedBankName">Bank</div>
+                                    <div class="liSub">Bank / eWallet transfer</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="spacer12"></div>
+
+                        <label class="subtle" for="accountNumber">Account number</label>
+                        <div class="spacer8"></div>
+                        <input class="input" id="accountNumber" inputmode="numeric"
+                            placeholder="Enter account number" />
+
+                        <div class="spacer16"></div>
+
+                        <label class="subtle">Purpose</label>
+                        <div class="chips" id="purposeChips">
+                            <div class="chip active" data-purpose="Fund transfer">Fund transfer</div>
+                            <div class="chip" data-purpose="Loan">Loan</div>
+                            <div class="chip" data-purpose="Credit card">Credit card</div>
+                        </div>
+
+                        <div class="hint">Tip: keep the flow calm — show only what’s needed now.</div>
+                    </div>
+
+                    <div class="footerCta">
+                        <button class="btn btnPrimary" id="toAmountBtn" style="width: 100%" disabled>Next</button>
+                    </div>
+                </section>
+
+                <!-- AMOUNT -->
+                <section class="screen" id="screen-amount">
+                    <div class="headerRow">
+                        <div class="back" data-back="screen-account">←</div>
+                        <h1 class="title">Amount</h1>
+                        <div class="iconBtn" title="Edit">✎</div>
+                    </div>
+
+                    <div class="amountHero">
+                        <div class="amountTo">
+                            <div class="who">
+                                <strong id="toName">Recipient</strong>
+                                <span id="toMeta">Bank • **** 5233</span>
+                            </div>
+                            <div class="badge" id="toBadge">C</div>
+                        </div>
+
+                        <div class="amountBig" id="amountDisplay">RM 0.00</div>
+
+                        <div class="afterRow">
+                            <span>After transfer</span>
+                            <span id="afterBalance">RM 100.00</span>
+                        </div>
+
+                        <div class="chips" style="margin-top: 12px">
+                            <div class="chip" data-quick="10">RM10</div>
+                            <div class="chip" data-quick="50">RM50</div>
+                            <div class="chip" data-quick="100">RM100</div>
+                        </div>
+                    </div>
+
+                    <div class="keypad" id="keypad"></div>
+
+                    <div class="footerCta">
+                        <button class="btn btnPrimary" id="confirmBtn" style="width: 100%" disabled>
+                            Review & confirm
+                        </button>
+                    </div>
+                </section>
+
+                <!-- REVIEW -->
+                <section class="screen" id="screen-review">
+                    <div class="headerRow">
+                        <div class="back" data-back="screen-amount">←</div>
+                        <h1 class="title">Review</h1>
+                        <div class="iconBtn" title="Info">i</div>
+                    </div>
+
+                    <div class="card receipt">
+                        <div class="row">
+                            <div>
+                                <div class="subtle">Sending</div>
+                                <div style="font-weight: 950; font-size: 22px" id="reviewAmount">RM 0.00</div>
+                            </div>
+                            <div class="right">
+                                <div class="subtle">From</div>
+                                <div style="font-weight: 900">Main Account</div>
+                                <div class="small" id="reviewBalance">Available: RM 100.00</div>
+                            </div>
+                        </div>
+
+                        <div class="spacer12"></div>
+
+                        <div class="kv">
+                            <div class="k">To</div>
+                            <div class="v" id="reviewTo">—</div>
+                        </div>
+                        <div class="kv">
+                            <div class="k">Bank</div>
+                            <div class="v" id="reviewBank">—</div>
+                        </div>
+                        <div class="kv">
+                            <div class="k">Purpose</div>
+                            <div class="v" id="reviewPurpose">Fund transfer</div>
+                        </div>
+                        <div class="kv">
+                            <div class="k">Reference</div>
+                            <div class="v mono" id="reviewRef">260130E79CBCF8C</div>
+                        </div>
+
+                        <div class="hint">You’ll be asked to authenticate before we send.</div>
+                    </div>
+
+                    <div class="footerCta">
+                        <button class="btn btnPrimary" id="authBtn" style="width: 100%">Confirm & authenticate</button>
+                    </div>
+                </section>
+
+                <!-- TRANSFERRING -->
+                <section class="screen" id="screen-sending">
+                    <div class="center">
+                        <div class="rocket">🚀</div>
+                        <h2 style="margin: 0; font-weight: 950; letter-spacing: -0.4px">Transferring…</h2>
+                        <p style="margin: 8px 0 0; color: var(--muted); font-weight: 650">
+                            Keeping it calm. Please don’t close the app.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- SUCCESS -->
+                <section class="screen" id="screen-success">
+                    <div class="headerRow">
+                        <div class="back" data-back="screen-home">←</div>
+                        <h1 class="title">Receipt</h1>
+                        <div class="iconBtn" title="Star">☆</div>
+                    </div>
+
+                    <div class="center" style="padding-top: 10px">
+                        <div class="checkRing">✓</div>
+                        <div style="font-weight: 950; font-size: 22px; margin-top: 4px; color: var(--success)">
+                            Successful
+                        </div>
+                        <div style="font-weight: 950; font-size: 44px; letter-spacing: -1px" id="successAmount">
+                            RM 0.00
+                        </div>
+                        <div class="small" id="successTime">30 Jan 2026, 9:28 PM</div>
+                    </div>
+
+                    <div class="card receipt" style="margin-top: 6px">
+                        <div class="kv">
+                            <div class="k">To</div>
+                            <div class="v" id="successTo">—</div>
+                        </div>
+                        <div class="kv">
+                            <div class="k">Paid from</div>
+                            <div class="v">Main Account</div>
+                        </div>
+                        <div class="kv">
+                            <div class="k">Reference ID</div>
+                            <div class="v mono" id="successRef">260130E79CBCF8C</div>
+                        </div>
+                        <div class="kv">
+                            <div class="k">Purpose</div>
+                            <div class="v" id="successPurpose">Fund transfer</div>
+                        </div>
+                    </div>
+
+                    <div class="footerCta" style="display: grid; gap: 10px">
+                        <button class="btn btnPrimary" style="width: 100%" data-go="screen-home">Done</button>
+                        <button class="btn btnGhost" style="width: 100%" id="shareBtn">Share receipt</button>
+                    </div>
+                </section>
+
+                <!-- BIOMETRICS MODAL -->
+                <div class="overlay" id="bioOverlay" role="dialog" aria-modal="true" aria-label="Biometrics">
+                    <div class="modal">
+                        <div class="modalHeader">
+                            <div class="bioIcon">🫧</div>
+                            <div style="flex: 1">
+                                <h3>Confirm with biometrics</h3>
+                                <p>Authenticate to send this transfer (demo modal).</p>
+                            </div>
+                            <button class="btn btnGhost" id="bioClose" style="padding: 10px 12px">✕</button>
+                        </div>
+
+                        <div class="modalActions">
+                            <button class="btn btnPrimary" id="bioOk">Authenticate</button>
+                            <button class="btn btnGhost" id="bioCancel">Cancel</button>
+                        </div>
+
+                        <div class="hint">Nice touch: handle cancel gracefully (no scary red).</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottomNav">
+                <div class="navItem active" data-go="screen-home">
+                    <div class="navDot">⌂</div>
+                    Home
+                </div>
+                <div class="navItem" data-go="screen-home">
+                    <div class="navDot">≋</div>
+                    Insights
+                </div>
+                <div class="navItem" data-go="screen-home">
+                    <div class="navDot">◎</div>
+                    Accounts
+                </div>
+                <div class="navItem" data-go="screen-home">
+                    <div class="navDot">▦</div>
+                    Cards
+                </div>
+                <div class="navItem" data-go="screen-home">
+                    <div class="navDot">★</div>
+                    Rewards
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Mini state (simple demo) ---
+        const state = {
+            balance: 100.0,
+            balanceHidden: false,
+            selectedBank: { name: "CIMB Bank", code: "CIMB" },
+            accountNumber: "",
+            purpose: "Fund transfer",
+            recipientName: "ARSHAD AHMAD BIN AMEER AB",
+            amountCents: 0,
+            ref: "260130E79CBCF8C",
+        };
+
+        const $ = (sel) => document.querySelector(sel);
+        const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+        function formatRM(amount) {
+            return "RM " + amount.toFixed(2);
+        }
+
+        function centsToRM(cents) {
+            return cents / 100;
+        }
+
+        function setActiveScreen(id) {
+            $$(".screen").forEach((s) => s.classList.remove("active"));
+            $("#" + id).classList.add("active");
+
+            // bottom nav highlight for demo
+            $$(".navItem").forEach((n) => n.classList.remove("active"));
+            const homeNav = $$(".navItem").find((n) => n.textContent.includes("Home"));
+            if (id === "screen-home") homeNav?.classList.add("active");
+        }
+
+        function updateBalanceUI() {
+            const text = state.balanceHidden ? "RM ••••" : formatRM(state.balance);
+            $("#balanceText").textContent = text;
+        }
+
+        function genRef() {
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            let out = "";
+            for (let i = 0; i < 15; i++) out += chars[Math.floor(Math.random() * chars.length)];
+            return out;
+        }
+
+        function initials(name) {
+            const parts = name.trim().split(/\s+/).slice(0, 2);
+            return parts.map((p) => p[0]).join("").toUpperCase();
+        }
+
+        // --- Bank list render ---
+        const banks = [
+            { name: "Ryt Bank", code: "RYT" },
+            { name: "Maybank", code: "MBB" },
+            { name: "CIMB Bank", code: "CIMB" },
+            { name: "Public Bank", code: "PBB" },
+            { name: "RHB Bank", code: "RHB" },
+            { name: "Hong Leong Bank", code: "HLB" },
+        ];
+
+        function renderBankList(filter = "") {
+            const list = $("#bankList");
+            const f = filter.trim().toLowerCase();
+            const filtered = banks.filter((b) => b.name.toLowerCase().includes(f));
+
+            list.innerHTML = filtered
+                .map(
+                    (b) => `
+          <div class="listItem" role="button" data-bank="${b.code}">
+            <div class="liLeft">
+              <div class="badge">${b.code.slice(0, 2)}</div>
+              <div class="liText">
+                <div class="liTitle">${b.name}</div>
+                <div class="liSub">Instant transfer • Demo</div>
+              </div>
+            </div>
+            <div class="chev">›</div>
+          </div>
+        `,
+                )
+                .join("");
+
+            $$("#bankList .listItem").forEach((item) => {
+                item.addEventListener("click", () => {
+                    const code = item.getAttribute("data-bank");
+                    const bank = banks.find((x) => x.code === code);
+                    state.selectedBank = bank;
+                    $("#selectedBankName").textContent = bank.name;
+                    $("#selectedBankBadge").textContent = bank.code.slice(0, 2);
+                    setActiveScreen("screen-account");
+                    syncAccountScreen();
+                });
+            });
+        }
+
+        function syncAccountScreen() {
+            $("#accountNumber").value = state.accountNumber;
+            $("#toAmountBtn").disabled = state.accountNumber.trim().length < 6;
+        }
+
+        function syncAmountScreen() {
+            const masked = state.accountNumber ? "**** " + state.accountNumber.slice(-4) : "**** 5233";
+            $("#toName").textContent = state.recipientName;
+            $("#toMeta").textContent = `${state.selectedBank.name} • ${masked}`;
+            $("#toBadge").textContent = initials(state.recipientName);
+
+            $("#amountDisplay").textContent = formatRM(centsToRM(state.amountCents));
+            const after = state.balance - centsToRM(state.amountCents);
+            $("#afterBalance").textContent = after >= 0 ? formatRM(after) : "Insufficient funds";
+
+            $("#confirmBtn").disabled = state.amountCents <= 0 || after < 0;
+        }
+
+        function syncReview() {
+            state.ref = genRef();
+            $("#reviewAmount").textContent = formatRM(centsToRM(state.amountCents));
+            $("#reviewBalance").textContent = "Available: " + formatRM(state.balance);
+            $("#reviewTo").textContent = state.recipientName;
+            $("#reviewBank").textContent = state.selectedBank.name;
+            $("#reviewPurpose").textContent = state.purpose;
+            $("#reviewRef").textContent = state.ref;
+        }
+
+        function syncSuccess() {
+            $("#successAmount").textContent = formatRM(centsToRM(state.amountCents));
+            $("#successTo").textContent = state.recipientName;
+            $("#successRef").textContent = state.ref;
+            $("#successPurpose").textContent = state.purpose;
+
+            const now = new Date();
+            const fmt = now.toLocaleString(undefined, {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+            });
+            $("#successTime").textContent = fmt;
+        }
+
+        // --- Keypad (amount cents) ---
+        function buildKeypad() {
+            const keys = [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                ".",
+                "0",
+                "⌫",
+            ];
+            const kp = $("#keypad");
+            kp.innerHTML = keys
+                .map((k) => `<div class="key ${k === "." || k === "⌫" ? "muted" : ""}" data-key="${k}">${k}</div>`)
+                .join("");
+
+            let raw = "0"; // raw numeric string without formatting; we'll store cents safely.
+
+            function normalizeToCents(str) {
+                // allow up to 2 decimals
+                const cleaned = str.replace(/[^\d.]/g, "");
+                if (!cleaned || cleaned === ".") return 0;
+
+                const parts = cleaned.split(".");
+                const whole = parts[0] || "0";
+                const frac = (parts[1] || "").slice(0, 2);
+                const fracPadded = (frac + "00").slice(0, 2);
+                const cents = parseInt(whole, 10) * 100 + parseInt(fracPadded, 10);
+                return Number.isFinite(cents) ? cents : 0;
+            }
+
+            function displayFromRaw(str) {
+                state.amountCents = normalizeToCents(str);
+                syncAmountScreen();
+            }
+
+            $$("#keypad .key").forEach((el) => {
+                el.addEventListener("click", () => {
+                    const k = el.getAttribute("data-key");
+                    if (k === "⌫") {
+                        raw = raw.length <= 1 ? "0" : raw.slice(0, -1);
+                        if (raw.endsWith(".")) raw = raw.slice(0, -1) || "0";
+                        displayFromRaw(raw);
+                        return;
+                    }
+                    if (k === ".") {
+                        if (!raw.includes(".")) raw += ".";
+                        displayFromRaw(raw);
+                        return;
+                    }
+
+                    // digit
+                    if (raw === "0") raw = k;
+                    else raw += k;
+
+                    displayFromRaw(raw);
+                });
+            });
+
+            // quick chips
+            $$("#screen-amount [data-quick]").forEach((chip) => {
+                chip.addEventListener("click", () => {
+                    const v = Number(chip.getAttribute("data-quick"));
+                    state.amountCents = Math.round(v * 100);
+                    raw = String(v);
+                    $$("#screen-amount [data-quick]").forEach((c) => c.classList.remove("active"));
+                    chip.classList.add("active");
+                    syncAmountScreen();
+                });
+            });
+
+            // expose a reset hook
+            window.__resetAmount = () => {
+                raw = "0";
+                state.amountCents = 0;
+                $$("#screen-amount [data-quick]").forEach((c) => c.classList.remove("active"));
+                syncAmountScreen();
+            };
+        }
+
+        // --- Event wiring ---
+        function wireNavigation() {
+            // go
+            $$("[data-go]").forEach((el) => {
+                el.addEventListener("click", () => {
+                    const id = el.getAttribute("data-go");
+                    setActiveScreen(id);
+
+                    if (id === "screen-banklist") renderBankList($("#bankSearch")?.value || "");
+                    if (id === "screen-account") syncAccountScreen();
+                    if (id === "screen-amount") {
+                        window.__resetAmount?.();
+                        syncAmountScreen();
+                    }
+                });
+            });
+
+            // back
+            $$("[data-back]").forEach((el) => {
+                el.addEventListener("click", () => {
+                    setActiveScreen(el.getAttribute("data-back"));
+                });
+            });
+        }
+
+        function wireHome() {
+            $("#toggleBalance").addEventListener("click", () => {
+                state.balanceHidden = !state.balanceHidden;
+                updateBalanceUI();
+            });
+        }
+
+        function wireTransfer() {
+            $("#smartPrefill").addEventListener("click", () => {
+                // demo prefill
+                state.selectedBank = banks.find((b) => b.code === "CIMB");
+                state.recipientName = "Adam";
+                state.accountNumber = "7058965233";
+                state.purpose = "Fund transfer";
+                setActiveScreen("screen-banklist");
+                renderBankList("");
+            });
+        }
+
+        function wireBankSearch() {
+            $("#bankSearch").addEventListener("input", (e) => {
+                renderBankList(e.target.value);
+            });
+        }
+
+        function wireAccount() {
+            $("#accountNumber").addEventListener("input", (e) => {
+                state.accountNumber = e.target.value.replace(/[^\d]/g, "");
+                syncAccountScreen();
+            });
+
+            $("#toAmountBtn").addEventListener("click", () => {
+                // derive recipient display name (demo)
+                state.recipientName = state.recipientName || "Recipient";
+                setActiveScreen("screen-amount");
+                window.__resetAmount?.();
+                syncAmountScreen();
+            });
+
+            $$("#purposeChips .chip").forEach((chip) => {
+                chip.addEventListener("click", () => {
+                    $$("#purposeChips .chip").forEach((c) => c.classList.remove("active"));
+                    chip.classList.add("active");
+                    state.purpose = chip.getAttribute("data-purpose");
+                });
+            });
+        }
+
+        function wireAmount() {
+            $("#confirmBtn").addEventListener("click", () => {
+                syncReview();
+                setActiveScreen("screen-review");
+            });
+        }
+
+        function wireReviewAndBiometrics() {
+            const overlay = $("#bioOverlay");
+            const open = () => overlay.classList.add("active");
+            const close = () => overlay.classList.remove("active");
+
+            $("#authBtn").addEventListener("click", open);
+            $("#bioClose").addEventListener("click", close);
+            $("#bioCancel").addEventListener("click", close);
+
+            $("#bioOk").addEventListener("click", () => {
+                close();
+                // show transferring then success
+                setActiveScreen("screen-sending");
+                setTimeout(() => {
+                    // commit balance change
+                    const amt = centsToRM(state.amountCents);
+                    state.balance = Math.max(0, state.balance - amt);
+                    updateBalanceUI();
+
+                    syncSuccess();
+                    setActiveScreen("screen-success");
+                }, 1200);
+            });
+        }
+
+        function wireShare() {
+            $("#shareBtn").addEventListener("click", async () => {
+                const text = `Receipt\nAmount: ${formatRM(centsToRM(state.amountCents))}\nTo: ${state.recipientName}\nRef: ${state.ref}`;
+                try {
+                    if (navigator.share) {
+                        await navigator.share({ title: "Transfer receipt", text });
+                    } else {
+                        await navigator.clipboard.writeText(text);
+                        alert("Receipt copied to clipboard ✅");
+                    }
+                } catch (e) {
+                    // ignore
+                }
+            });
+        }
+
+        // --- Init ---
+        updateBalanceUI();
+        renderBankList("");
+        buildKeypad();
+        wireNavigation();
+        wireHome();
+        wireTransfer();
+        wireBankSearch();
+        wireAccount();
+        wireAmount();
+        wireReviewAndBiometrics();
+        wireShare();
+
+        // default selected bank badge
+        $("#selectedBankName").textContent = state.selectedBank.name;
+        $("#selectedBankBadge").textContent = state.selectedBank.code.slice(0, 2);
+    </script>
+</body>
+
+</html>

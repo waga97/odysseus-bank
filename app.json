@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "Odysseus Bank",
+    "slug": "odysseus-bank",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "odysseusbank",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#300a14"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.odysseusbank.app",
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Odysseus Bank uses Face ID to securely authenticate your transactions",
+        "NSContactsUsageDescription": "Odysseus Bank needs access to your contacts to enable DuitNow transfers"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#300a14"
+      },
+      "package": "com.odysseusbank.app",
+      "permissions": [
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT",
+        "READ_CONTACTS"
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-local-authentication",
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Allow Odysseus Bank to access your contacts for DuitNow transfers"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

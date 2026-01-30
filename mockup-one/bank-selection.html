@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Select Bank - Odysseus Bank</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link href="shared/styles.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#300a14",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101c22",
+                        "card-light": "#ffffff",
+                        "card-dark": "#1a2c36",
+                        "text-main-light": "#0d171c",
+                        "text-main-dark": "#ffffff",
+                        "text-muted-light": "#64748b",
+                        "text-muted-dark": "#94a3b8",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "1rem", "lg": "1.5rem", "xl": "2rem", "full": "9999px" },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 0 15px rgba(48, 10, 20, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col antialiased transition-colors duration-200">
+    <!-- Top App Bar -->
+    <div class="sticky top-0 z-20 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md pt-safe-top">
+        <div class="flex items-center justify-between px-4 py-4">
+            <a href="transfer.html" class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors group">
+                <span class="material-symbols-outlined text-primary text-[24px] group-active:scale-95 transition-transform">arrow_back_ios_new</span>
+            </a>
+            <h2 class="text-text-main-light dark:text-text-main-dark text-lg font-bold tracking-tight">Select Bank</h2>
+            <div class="w-10"></div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-1 px-4 pb-10 w-full max-w-md mx-auto">
+        <!-- Search Bar -->
+        <div class="py-2 mb-6">
+            <label class="relative group block">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                    <span class="material-symbols-outlined text-primary/70 dark:text-primary/70">search</span>
+                </div>
+                <input class="block w-full py-3.5 pl-12 pr-4 bg-card-light dark:bg-card-dark text-text-main-light dark:text-text-main-dark border-none rounded-full shadow-soft focus:ring-2 focus:ring-primary/20 placeholder-text-muted-light dark:placeholder-text-muted-dark transition-all" placeholder="Search for your bank" type="text" />
+            </label>
+        </div>
+
+        <!-- Popular Banks -->
+        <div class="mb-6">
+            <h3 class="px-2 mb-3 text-sm font-semibold uppercase tracking-wider text-text-muted-light dark:text-text-muted-dark opacity-80">Popular Banks</h3>
+            <div class="flex flex-col space-y-3">
+                <a href="recipient-details.html" class="group relative flex items-center w-full p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-soft hover:shadow-lg transition-all duration-300 active:scale-[0.99] border border-transparent hover:border-primary/10">
+                    <div class="relative shrink-0 w-12 h-12 rounded-full overflow-hidden bg-white shadow-sm flex items-center justify-center border border-gray-100 dark:border-gray-800">
+                        <img class="w-full h-full object-cover" onerror="this.src='https://placehold.co/48x48/0da6f2/ffffff?text=C';" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOHrL0DZwHe9IcAgrgdqVLJpJRjyfBnj89uK1PgSUXJJXcNFvlSGFaEP_SKde8EEm5lKjcoQ0jPXBFzH2oUC0RxCT00MlH_BqbsL4QEx6B-uYMMw8zTfKdkNWNIYPilQhsFcWb4Ep5dOrwFm9e6cCdItd7ayodtaNFFbbcsErU2nkBkAxpb3DDhc1wo2siwLQL8HU4_R_38y1dDOEtrWn5QK6uQGDisNl_USlYPDwfa3nMhvo0AC2Wf1BhaphJeSAy2T5N7eRbpfU" />
+                    </div>
+                    <div class="ml-4 flex-1 text-left">
+                        <p class="text-base font-medium text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors">Chase</p>
+                    </div>
+                    <div class="shrink-0 flex items-center justify-center text-primary/40 group-hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </div>
+                </a>
+                <a href="recipient-details.html" class="group relative flex items-center w-full p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-soft hover:shadow-lg transition-all duration-300 active:scale-[0.99] border border-transparent hover:border-primary/10">
+                    <div class="relative shrink-0 w-12 h-12 rounded-full overflow-hidden bg-white shadow-sm flex items-center justify-center border border-gray-100 dark:border-gray-800">
+                        <img class="w-full h-full object-cover" onerror="this.src='https://placehold.co/48x48/e31837/ffffff?text=BoA';" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6GXzHifkOdKCwU2PssrsSkkCcNcBGAoeIuVUUscH7PwyPhjXylufkan07JZRfMF6_-x3PCELmo7et3QXGPFCHnCKiH8WthHVRq_62GzYaIK0mUIUzCxq8JHJBiJDLN-TOWO3lCKcV7_vMBZ5mtHYg9jGS0i4tykNnbb1YzCTgn6-52n2NTzoYe3upw8KBp5MSP0_BP1sI8iXQbbduO8lToA3yzbLY4r_8DQUl_e48rtUODwl5XSNBE_HgOk_3xo2OWuEtUXFXGl0" />
+                    </div>
+                    <div class="ml-4 flex-1 text-left">
+                        <p class="text-base font-medium text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors">Bank of America</p>
+                    </div>
+                    <div class="shrink-0 flex items-center justify-center text-primary/40 group-hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </div>
+                </a>
+                <a href="recipient-details.html" class="group relative flex items-center w-full p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-soft hover:shadow-lg transition-all duration-300 active:scale-[0.99] border border-transparent hover:border-primary/10">
+                    <div class="relative shrink-0 w-12 h-12 rounded-full overflow-hidden bg-white shadow-sm flex items-center justify-center border border-gray-100 dark:border-gray-800">
+                        <img class="w-full h-full object-cover" onerror="this.src='https://placehold.co/48x48/cd1409/ffffff?text=WF';" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5H_QZJLn4HrzRgfgAAh1FuzJqFXc6J2BYOO7hV6YlSXRgLTWb4LYonu5A6jPrarK4Isez4ct2u2_Zjb6vxkBXxdG2HYbRQFh8zQ1GmPSG-cQtpgIkUsvUKKYDKq67uBl1O7Z0Pj9fsBcCSsa2MlLLvqpPLpLDcTeAoO1VkjPw6rve0MISws-y-vJeFk37_KyYpRFLdxbgvia3lIQGeoG3HV9xfG6BXMarJm1jXVxe9yhly38lFBDkIR6NE375vBT0kp_ypmnwsyY" />
+                    </div>
+                    <div class="ml-4 flex-1 text-left">
+                        <p class="text-base font-medium text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors">Wells Fargo</p>
+                    </div>
+                    <div class="shrink-0 flex items-center justify-center text-primary/40 group-hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- All Banks -->
+        <div class="mb-6">
+            <h3 class="px-2 mb-3 text-sm font-semibold uppercase tracking-wider text-text-muted-light dark:text-text-muted-dark opacity-80">All Banks</h3>
+            <div class="flex flex-col space-y-3">
+                <a href="recipient-details.html" class="group relative flex items-center w-full p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-soft hover:shadow-lg transition-all duration-300 active:scale-[0.99] border border-transparent hover:border-primary/10">
+                    <div class="relative shrink-0 w-12 h-12 rounded-full overflow-hidden bg-white shadow-sm flex items-center justify-center border border-gray-100 dark:border-gray-800">
+                        <img class="w-full h-full object-cover" onerror="this.src='https://placehold.co/48x48/003b70/ffffff?text=Citi';" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSlvm-plqkZTm0H1wDfKJ24nrCYT5huM3PUYT8X7Td1yo1zljGjRppsZy-Lu2xJgevRpY0TIgzMUJpl3Yat2T3HJfUKH4KUCauNEGAzCamOAeNf3fLLXGxRfE4avKwXGiaeAqlP_aHhkzVE-Mr3PdtUAmeqOf7zcPTk_DNI0x_0g4WmfV5j9hdxONKS6-MkziywuFMQSKUUaViFWze9gAg1TYgIWeo6Q4elY8dc4RJVDofUVaOmTeFCccSjbp63Il0AjxE1BIItoA" />
+                    </div>
+                    <div class="ml-4 flex-1 text-left">
+                        <p class="text-base font-medium text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors">Citibank</p>
+                    </div>
+                    <div class="shrink-0 flex items-center justify-center text-primary/40 group-hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </div>
+                </a>
+                <a href="recipient-details.html" class="group relative flex items-center w-full p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-soft hover:shadow-lg transition-all duration-300 active:scale-[0.99] border border-transparent hover:border-primary/10">
+                    <div class="relative shrink-0 w-12 h-12 rounded-full overflow-hidden bg-white shadow-sm flex items-center justify-center border border-gray-100 dark:border-gray-800">
+                        <img class="w-full h-full object-cover" onerror="this.src='https://placehold.co/48x48/004879/ffffff?text=CO';" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPNC3X5DQxp0ev9b0MHTWZWNy_xcjq6Q2DA0icVuE7r1vjv-WymkraxEKOJb4DbcBG3GnCOpMY4C2-GusNNOU5cAUOsNhXvG4GteVQMS6xwk5iUqHmmrtJ4GndtFvRX8-EWn7zKOukG3UpWchquOjuU_cYfJ1VIUkgkzZ7I7k0bkDki5E21spNKpRDNVIivMaWoH6JRoaNpFGqEGX_0hCwCc8_XyMRM5EeH3t7PCrNdON24WKawLbjz18W6VhTORpXs7l0r2OEJII" />
+                    </div>
+                    <div class="ml-4 flex-1 text-left">
+                        <p class="text-base font-medium text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors">Capital One</p>
+                    </div>
+                    <div class="shrink-0 flex items-center justify-center text-primary/40 group-hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </div>
+                </a>
+                <a href="recipient-details.html" class="group relative flex items-center w-full p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-soft hover:shadow-lg transition-all duration-300 active:scale-[0.99] border border-transparent hover:border-primary/10">
+                    <div class="relative shrink-0 w-12 h-12 rounded-full overflow-hidden bg-white shadow-sm flex items-center justify-center border border-gray-100 dark:border-gray-800">
+                        <img class="w-full h-full object-cover" onerror="this.src='https://placehold.co/48x48/0c2074/ffffff?text=USB';" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyCfR8LouqRYMCSJXPVzYdZN0_-ddkKxY7b_768oLqnSYA2bWi7rWZdi1QPm4FD5FkKIBTiWpnRCKhmgjLvfrTkbYITs5DKniFVJxcMSRrSrIoyDz0xlyK7Nq1ApuaB1AP9tTtE9O9Kld3vdeTrAERXPwpzrBhgn2fL9X0cse56niEdfK_Ojadj_t38e1lTIx7wDhfCP3LgMMEWy1wFEAUE3GjG43scBs4aqFQ4fBcC1niBwxa0VPxLWYc6-zL7qSp84bFeJ0mz5U" />
+                    </div>
+                    <div class="ml-4 flex-1 text-left">
+                        <p class="text-base font-medium text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors">US Bank</p>
+                    </div>
+                    <div class="shrink-0 flex items-center justify-center text-primary/40 group-hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </div>
+                </a>
+                <a href="recipient-details.html" class="group relative flex items-center w-full p-4 bg-card-light dark:bg-card-dark rounded-xl shadow-soft hover:shadow-lg transition-all duration-300 active:scale-[0.99] border border-transparent hover:border-primary/10">
+                    <div class="relative shrink-0 w-12 h-12 rounded-full overflow-hidden bg-white shadow-sm flex items-center justify-center border border-gray-100 dark:border-gray-800">
+                        <img class="w-full h-full object-cover" onerror="this.src='https://placehold.co/48x48/f47321/ffffff?text=PNC';" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAB0Ho8N9JqcMXJKGK5cOnQvWc3f3JFrx8NgjqrK_2GwbXKvqxHz5djh9_oFAJbgDKtRNScMCo-ReJ_7JVjEIdJfmKqNTfVjWb1RkZjty_aFlSXyVEBtFJo6hMNxnrlJIqkXvUjPus-bhLuaodNujwFoRMn-y5eej-kJUHLW64bQdwkEUiw7Sj0rxZI1fQc21shO5He9l3s65H3soQRNMu0fGM5sNKqCDBt837wr1xu_6zVW1ux6Y1tnEbkdS-qTuM_KOUzTc0O9aY" />
+                    </div>
+                    <div class="ml-4 flex-1 text-left">
+                        <p class="text-base font-medium text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors">PNC Bank</p>
+                    </div>
+                    <div class="shrink-0 flex items-center justify-center text-primary/40 group-hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </main>
+    <script src="js/app.js"></script>
+</body>
+
+</html>

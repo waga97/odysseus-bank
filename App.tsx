@@ -1,35 +1,20 @@
+/**
+ * Odysseus Bank - App Entry Point
+ */
+
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { RootNavigator } from './src/navigation/RootNavigator';
 
 export default function App() {
   return (
     <SafeAreaProvider>
-      <View style={styles.container}>
-        <Text style={styles.title}>Odysseus Bank</Text>
-        <Text style={styles.subtitle}>Banking Done Right</Text>
-        <StatusBar style="auto" />
-      </View>
+      <NavigationContainer>
+        <StatusBar style="dark" />
+        <RootNavigator />
+      </NavigationContainer>
     </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f7f8',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: '#300a14',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#64748b',
-  },
-});

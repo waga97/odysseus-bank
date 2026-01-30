@@ -10,6 +10,7 @@ import { colors } from '@theme/colors';
 
 // Screens
 import { HomeScreen } from '@features/home';
+import { TransferHubScreen } from '@features/transfer';
 import { PlaceholderScreen } from './PlaceholderScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -29,36 +30,15 @@ export function RootNavigator() {
       screenOptions={defaultScreenOptions}
     >
       {/* Main */}
-      <Stack.Screen
-        name="Home"
-        component={HomeScreen}
-      />
+      <Stack.Screen name="Home" component={HomeScreen} />
 
       {/* Transfer Flow */}
-      <Stack.Screen
-        name="TransferHub"
-        component={PlaceholderScreen}
-      />
-      <Stack.Screen
-        name="BankSelection"
-        component={PlaceholderScreen}
-      />
-      <Stack.Screen
-        name="RecipientDetails"
-        component={PlaceholderScreen}
-      />
-      <Stack.Screen
-        name="ContactPicker"
-        component={PlaceholderScreen}
-      />
-      <Stack.Screen
-        name="AmountEntry"
-        component={PlaceholderScreen}
-      />
-      <Stack.Screen
-        name="TransferReview"
-        component={PlaceholderScreen}
-      />
+      <Stack.Screen name="TransferHub" component={TransferHubScreen} />
+      <Stack.Screen name="BankSelection" component={PlaceholderScreen} />
+      <Stack.Screen name="RecipientDetails" component={PlaceholderScreen} />
+      <Stack.Screen name="ContactPicker" component={PlaceholderScreen} />
+      <Stack.Screen name="AmountEntry" component={PlaceholderScreen} />
+      <Stack.Screen name="TransferReview" component={PlaceholderScreen} />
       <Stack.Screen
         name="TransferProcessing"
         component={PlaceholderScreen}
@@ -73,26 +53,14 @@ export function RootNavigator() {
           gestureEnabled: false, // Force user to use "Done" button
         }}
       />
-      <Stack.Screen
-        name="TransferError"
-        component={PlaceholderScreen}
-      />
+      <Stack.Screen name="TransferError" component={PlaceholderScreen} />
 
       {/* History */}
-      <Stack.Screen
-        name="TransferHistory"
-        component={PlaceholderScreen}
-      />
-      <Stack.Screen
-        name="TransactionDetails"
-        component={PlaceholderScreen}
-      />
+      <Stack.Screen name="TransferHistory" component={PlaceholderScreen} />
+      <Stack.Screen name="TransactionDetails" component={PlaceholderScreen} />
 
       {/* Settings */}
-      <Stack.Screen
-        name="Settings"
-        component={PlaceholderScreen}
-      />
+      <Stack.Screen name="Settings" component={PlaceholderScreen} />
     </Stack.Navigator>
   );
 }

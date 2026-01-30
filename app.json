@@ -12,9 +12,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#300a14"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.odysseusbank.app",
@@ -29,15 +27,10 @@
         "backgroundColor": "#300a14"
       },
       "package": "com.odysseusbank.app",
-      "permissions": [
-        "USE_BIOMETRIC",
-        "USE_FINGERPRINT",
-        "READ_CONTACTS"
-      ]
+      "permissions": ["USE_BIOMETRIC", "USE_FINGERPRINT", "READ_CONTACTS"]
     },
     "web": {
       "bundler": "metro",
-      "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
@@ -48,9 +41,6 @@
           "contactsPermission": "Allow Odysseus Bank to access your contacts for DuitNow transfers"
         }
       ]
-    ],
-    "experiments": {
-      "typedRoutes": true
-    }
+    ]
   }
 }

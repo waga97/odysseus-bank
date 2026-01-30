@@ -1,9 +1,9 @@
 /**
  * Odysseus Bank - API Endpoints
- * Type-safe API methods for all endpoints
+ * Uses mock API directly for development
  */
 
-import { apiClient } from './client';
+import { mockApi } from '../mocks/mockApi';
 import type {
   User,
   Account,
@@ -20,60 +20,55 @@ import type {
  * User API
  */
 export const userApi = {
-  getProfile: () => apiClient.get<User>('/api/user'),
-
-  getLimits: () => apiClient.get<TransferLimits>('/api/user/limits'),
+  getProfile: (): Promise<User> => mockApi.getUser(),
+  getLimits: (): Promise<TransferLimits> => mockApi.getLimits(),
 };
 
 /**
  * Account API
  */
 export const accountApi = {
-  getAccounts: () => apiClient.get<Account[]>('/api/accounts'),
+  getAccounts: (): Promise<Account[]> => mockApi.getAccounts(),
 };
 
 /**
  * Recipient API
  */
 export const recipientApi = {
-  getRecipients: () => apiClient.get<Recipient[]>('/api/recipients'),
-
-  lookupRecipient: (params: { accountNumber?: string; phoneNumber?: string }) =>
-    apiClient.get<Recipient>('/api/recipients/lookup', params),
-
-  addFavorite: (recipientId: string) =>
-    apiClient.post<Recipient>('/api/recipients/favorite', { recipientId }),
+  getRecipients: (): Promise<Recipient[]> => mockApi.getRecipients(),
+  lookupRecipient: (params: {
+    accountNumber?: string;
+    phoneNumber?: string;
+  }): Promise<Recipient> => mockApi.lookupRecipient(params),
 };
 
 /**
  * Bank API
  */
 export const bankApi = {
-  getBanks: () => apiClient.get<Bank[]>('/api/banks'),
+  getBanks: (): Promise<Bank[]> => mockApi.getBanks(),
 };
 
 /**
  * Transfer API
  */
 export const transferApi = {
-  validate: (request: TransferRequest) =>
-    apiClient.post<TransferValidationResult>('/api/transfer/validate', request),
-
+  validate: (request: TransferRequest): Promise<TransferValidationResult> =>
+    mockApi.validateTransfer(request),
   execute: (
-    request: TransferRequest & {
-      recipientName?: string;
-      bankName?: string;
-    }
-  ) => apiClient.post<Transaction>('/api/transfer', request),
+    request: TransferRequest & { recipientName?: string; bankName?: string }
+  ): Promise<Transaction> => mockApi.executeTransfer(request),
 };
 
 /**
  * Transaction API
  */
 export const transactionApi = {
-  getTransactions: (params?: { limit?: number; page?: number }) =>
-    apiClient.get<PaginatedResponse<Transaction>>('/api/transactions', params),
-
-  getTransaction: (id: string) =>
-    apiClient.get<Transaction>(`/api/transactions/${id}`),
+  getTransactions: (params?: {
+    limit?: number;
+    page?: number;
+  }): Promise<PaginatedResponse<Transaction>> =>
+    mockApi.getTransactions(params),
+  getTransaction: (id: string): Promise<Transaction> =>
+    mockApi.getTransaction(id),
 };

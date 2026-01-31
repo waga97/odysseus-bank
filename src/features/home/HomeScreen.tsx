@@ -33,6 +33,7 @@ import {
   RecentActivity,
   BottomNav,
 } from './components';
+import { SkeletonBalanceCard, SkeletonAccountCard } from '@components/ui';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -151,16 +152,26 @@ export function HomeScreen() {
           }
         >
           {/* Balance Display */}
-          <BalanceCard />
+          {isLoading ? <SkeletonBalanceCard /> : <BalanceCard />}
 
           {/* Quick Actions */}
           <QuickActions onTransferPress={handleTransferPress} />
 
           {/* Account Cards - Horizontal Scroll */}
-          <AccountCards />
+          {isLoading ? (
+            <View style={styles.skeletonAccountCards}>
+              <SkeletonAccountCard />
+              <SkeletonAccountCard style={styles.skeletonAccountCardMargin} />
+            </View>
+          ) : (
+            <AccountCards />
+          )}
 
           {/* Recent Transactions */}
-          <RecentActivity onSeeAllPress={handleSeeAllTransactions} />
+          <RecentActivity
+            onSeeAllPress={handleSeeAllTransactions}
+            isLoading={isLoading}
+          />
         </ScrollView>
       </View>
 
@@ -189,6 +200,14 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingBottom: spacing[6],
+  },
+  skeletonAccountCards: {
+    flexDirection: 'row',
+    paddingHorizontal: spacing[5],
+    marginTop: spacing[6],
+  },
+  skeletonAccountCardMargin: {
+    marginLeft: spacing[3],
   },
 });
 

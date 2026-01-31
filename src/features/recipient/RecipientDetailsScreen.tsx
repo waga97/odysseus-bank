@@ -14,8 +14,8 @@ import {
   ScrollView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Text, Input, Button, Icon } from '@components/ui';
-import { colors } from '@theme/colors';
+import { Text, Input, Button, Icon, Avatar } from '@components/ui';
+import { colors, palette } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { borderRadius } from '@theme/borderRadius';
 import type { RootStackScreenProps } from '@navigation/types';
@@ -141,14 +141,10 @@ export function RecipientDetailsScreen({ navigation, route }: Props) {
         >
           {/* Bank Info */}
           <View style={styles.bankCard}>
-            <View style={styles.bankIcon}>
-              <Text style={styles.bankInitial}>{bankName[0]}</Text>
-            </View>
+            <Avatar name={bankName} size="medium" />
             <View style={styles.bankInfo}>
-              <Text variant="titleSmall" color="primary">
-                {bankName}
-              </Text>
-              <Text variant="caption" color="secondary">
+              <Text style={styles.bankName}>{bankName}</Text>
+              <Text style={styles.bankSubtitle}>
                 Enter account number below
               </Text>
             </View>
@@ -170,7 +166,7 @@ export function RecipientDetailsScreen({ navigation, route }: Props) {
 
           {/* Info Card */}
           <View style={styles.infoCard}>
-            <Icon name="info" size={20} color={colors.status.info} />
+            <Icon name="info" size={18} color={palette.accent.main} />
             <Text variant="bodySmall" color="secondary" style={styles.infoText}>
               Make sure the account number is correct. Transfers to wrong
               accounts cannot be reversed.
@@ -245,34 +241,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[3],
-    padding: spacing[4],
-    backgroundColor: colors.background.secondary,
-    borderRadius: borderRadius.xl,
-  },
-  bankIcon: {
-    width: 48,
-    height: 48,
+    padding: spacing[3],
+    backgroundColor: palette.primary.contrast,
     borderRadius: borderRadius.lg,
-    backgroundColor: colors.primary[50],
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  bankInitial: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.primary[600],
   },
   bankInfo: {
     flex: 1,
     gap: 2,
   },
+  bankName: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.text.primary,
+  },
+  bankSubtitle: {
+    fontSize: 13,
+    color: colors.text.tertiary,
+  },
   infoCard: {
     flexDirection: 'row',
-    gap: spacing[3],
-    padding: spacing[4],
-    backgroundColor: colors.status.infoBg,
+    gap: spacing[2],
+    padding: spacing[3],
+    backgroundColor: colors.accent.bg,
     borderRadius: borderRadius.lg,
-    alignItems: 'flex-start',
+    alignItems: 'center',
   },
   infoText: {
     flex: 1,

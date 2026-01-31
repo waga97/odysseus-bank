@@ -3,13 +3,14 @@
  * Handles various transfer error states with appropriate messaging
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { View, StyleSheet, StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text, Icon, Button } from '@components/ui';
 import { colors, palette } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { borderRadius } from '@theme/borderRadius';
+import { errorHaptic } from '@utils/haptics';
 import type { RootStackScreenProps } from '@navigation/types';
 
 type Props = RootStackScreenProps<'TransferError'>;
@@ -91,6 +92,11 @@ const ERROR_CONFIGS: Record<string, ErrorConfig> = {
 export function TransferErrorScreen({ navigation, route }: Props) {
   const { errorType, errorMessage } = route.params;
   const insets = useSafeAreaInsets();
+
+  // Trigger error haptic on mount
+  useEffect(() => {
+    void errorHaptic();
+  }, []);
 
   const config = useMemo(() => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

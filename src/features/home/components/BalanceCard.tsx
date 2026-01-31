@@ -39,7 +39,7 @@ export function BalanceCard() {
           <Icon
             name={isHidden ? 'eye-off' : 'eye'}
             size={18}
-            color={colors.text.tertiary}
+            color={palette.accent.main}
           />
         </Pressable>
       </View>

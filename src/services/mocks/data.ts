@@ -1,6 +1,7 @@
 /**
  * Odysseus Bank - Mock Data
  * Realistic test data for development and testing
+ * NOTE: User name and balances are controlled from @config/app.ts
  */
 
 import type {
@@ -11,20 +12,23 @@ import type {
   TransferLimits,
   Bank,
 } from '@types';
+import { appConfig } from '@config/app';
 
 /**
  * Current logged-in user
+ * Name, email, phone controlled from appConfig.mockUser
  */
 export const mockUser: User = {
   id: 'user-001',
-  name: 'Ahmad Razak',
-  email: 'ahmad.razak@email.com',
-  phone: '+60123456789',
+  name: appConfig.mockUser.name,
+  email: appConfig.mockUser.email,
+  phone: appConfig.mockUser.phone,
   avatar: 'https://i.pravatar.cc/150?u=ahmad',
 };
 
 /**
  * User's bank accounts
+ * Balances controlled from appConfig.mockBalances
  */
 export const mockAccounts: Account[] = [
   {
@@ -32,7 +36,7 @@ export const mockAccounts: Account[] = [
     name: 'Savings Account',
     accountNumber: '1234567890',
     type: 'savings',
-    balance: 4500.0,
+    balance: appConfig.mockBalances.savings,
     currency: 'RM',
     isDefault: true,
   },
@@ -41,7 +45,7 @@ export const mockAccounts: Account[] = [
     name: 'Current Account',
     accountNumber: '0987654321',
     type: 'current',
-    balance: 12350.75,
+    balance: appConfig.mockBalances.current,
     currency: 'RM',
     isDefault: false,
   },
@@ -50,27 +54,31 @@ export const mockAccounts: Account[] = [
     name: 'Investment',
     accountNumber: '5556667778',
     type: 'investment',
-    balance: 25000.0,
+    balance: appConfig.mockBalances.investment,
     currency: 'RM',
     isDefault: false,
   },
 ];
 
 /**
- * Transfer limits
+ * Transfer limits - controlled from appConfig.transferLimits
  */
 export const mockTransferLimits: TransferLimits = {
   daily: {
-    limit: 10000,
-    used: 2500,
-    remaining: 7500,
+    limit: appConfig.transferLimits.daily.limit,
+    used: appConfig.transferLimits.daily.used,
+    remaining:
+      appConfig.transferLimits.daily.limit -
+      appConfig.transferLimits.daily.used,
   },
   monthly: {
-    limit: 50000,
-    used: 15000,
-    remaining: 35000,
+    limit: appConfig.transferLimits.monthly.limit,
+    used: appConfig.transferLimits.monthly.used,
+    remaining:
+      appConfig.transferLimits.monthly.limit -
+      appConfig.transferLimits.monthly.used,
   },
-  perTransaction: 5000,
+  perTransaction: appConfig.transferLimits.perTransaction,
 };
 
 /**

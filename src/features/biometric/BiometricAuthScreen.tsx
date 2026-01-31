@@ -20,6 +20,8 @@ import { spacing } from '@theme/spacing';
 import { borderRadius } from '@theme/borderRadius';
 import type { RootStackScreenProps } from '@navigation/types';
 import { formatCurrency } from '@utils/currency';
+import { appConfig } from '@config/app';
+import { lightHaptic, errorHaptic, successHaptic } from '@utils/haptics';
 
 type Props = RootStackScreenProps<'BiometricAuth'>;
 
@@ -34,6 +36,7 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
   const [biometricType, setBiometricType] = useState<BiometricType>('none');
   const [showPinFallback, setShowPinFallback] = useState(false);
   const [pin, setPin] = useState('');
+  const [pinError, setPinError] = useState(false);
 
   // Animation values
   const pulseAnim = useState(new Animated.Value(1))[0];
@@ -146,7 +149,7 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
     }
   };
 
-  const triggerShake = () => {
+  const triggerShake = useCallback(() => {
     Animated.sequence([
       Animated.timing(shakeAnim, {
         toValue: 10,
@@ -174,7 +177,7 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
         useNativeDriver: true,
       }),
     ]).start();
-  };
+  }, [shakeAnim]);
 
   const handleBack = useCallback(() => {
     navigation.goBack();
@@ -188,26 +191,45 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
 
   const handlePinPress = useCallback(
     (digit: string) => {
+      // Clear error state when user starts typing again
+      if (pinError) {
+        setPinError(false);
+      }
+
       if (pin.length < 6) {
+        void lightHaptic();
         const newPin = pin + digit;
         setPin(newPin);
 
         if (newPin.length === 6) {
           setTimeout(() => {
-            setAuthState('success');
-            setTimeout(() => {
-              navigation.replace('TransferProcessing', {
-                transferId: `txn-${Date.now()}`,
-                recipient,
-                amount,
-                note,
-              });
-            }, 500);
+            // Validate PIN against centralized config
+            if (newPin === appConfig.pinCode) {
+              void successHaptic();
+              setAuthState('success');
+              setTimeout(() => {
+                navigation.replace('TransferProcessing', {
+                  transferId: `txn-${Date.now()}`,
+                  recipient,
+                  amount,
+                  note,
+                });
+              }, 500);
+            } else {
+              // Wrong PIN - show error and allow retry
+              void errorHaptic();
+              setPinError(true);
+              triggerShake();
+              // Clear PIN after a short delay so user can retry
+              setTimeout(() => {
+                setPin('');
+              }, 300);
+            }
           }, 300);
         }
       }
     },
-    [pin, navigation, recipient, amount, note]
+    [pin, pinError, navigation, recipient, amount, note, triggerShake]
   );
 
   const handlePinDelete = useCallback(() => {
@@ -276,17 +298,30 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
           </View>
 
           {/* PIN Dots */}
-          <View style={styles.pinDotsContainer}>
+          <Animated.View
+            style={[
+              styles.pinDotsContainer,
+              { transform: [{ translateX: shakeAnim }] },
+            ]}
+          >
             {[0, 1, 2, 3, 4, 5].map((index) => (
               <View
                 key={index}
                 style={[
                   styles.pinDot,
                   pin.length > index && styles.pinDotFilled,
+                  pinError && styles.pinDotError,
                 ]}
               />
             ))}
-          </View>
+          </Animated.View>
+
+          {/* Error Message */}
+          {pinError && (
+            <Text style={styles.pinErrorText}>
+              Incorrect PIN. Please try again.
+            </Text>
+          )}
 
           {/* Use Biometric Option */}
           {biometricType !== 'none' && (
@@ -570,6 +605,16 @@ const styles = StyleSheet.create({
   pinDotFilled: {
     backgroundColor: palette.accent.main,
     borderColor: palette.accent.main,
+  },
+  pinDotError: {
+    borderColor: palette.error.main,
+    backgroundColor: palette.error.light,
+  },
+  pinErrorText: {
+    fontSize: 14,
+    color: palette.error.main,
+    marginTop: spacing[2],
+    textAlign: 'center',
   },
   useBiometricButton: {
     flexDirection: 'row',

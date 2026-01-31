@@ -14,15 +14,16 @@ import {
   generateTransactionId,
 } from './data';
 import type { Transaction, TransferRequest } from '@types';
+import { appConfig } from '@config/app';
 
 // In-memory state for mutations
 let currentBalance = mockAccounts[0]?.balance ?? 0;
 let dailyUsed = mockTransferLimits.daily.used;
 const transactions = [...mockTransactions];
 
-// Simulate network delay
+// Simulate network delay using centralized config
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-const randomDelay = () => delay(300 + Math.random() * 500);
+const apiDelay = () => delay(appConfig.loadingDelay);
 
 /**
  * Mock API functions
@@ -30,13 +31,13 @@ const randomDelay = () => delay(300 + Math.random() * 500);
 export const mockApi = {
   // User
   async getUser() {
-    await randomDelay();
+    await apiDelay();
     return mockUser;
   },
 
   // Accounts
   async getAccounts() {
-    await randomDelay();
+    await apiDelay();
     return mockAccounts.map((acc, index) =>
       index === 0 ? { ...acc, balance: currentBalance } : acc
     );
@@ -44,7 +45,7 @@ export const mockApi = {
 
   // Limits
   async getLimits() {
-    await randomDelay();
+    await apiDelay();
     return {
       ...mockTransferLimits,
       daily: {
@@ -57,7 +58,7 @@ export const mockApi = {
 
   // Recipients
   async getRecipients() {
-    await randomDelay();
+    await apiDelay();
     return mockRecipients;
   },
 
@@ -65,7 +66,7 @@ export const mockApi = {
     accountNumber?: string;
     phoneNumber?: string;
   }) {
-    await randomDelay();
+    await apiDelay();
 
     // Simulate not found
     if (
@@ -87,13 +88,13 @@ export const mockApi = {
 
   // Banks
   async getBanks() {
-    await randomDelay();
+    await apiDelay();
     return mockBanks;
   },
 
   // Transfer validation
   async validateTransfer(request: TransferRequest) {
-    await randomDelay();
+    await apiDelay();
 
     const errors: { field: string; message: string }[] = [];
     const warnings: {
@@ -201,7 +202,7 @@ export const mockApi = {
 
   // Transactions
   async getTransactions(params?: { limit?: number; page?: number }) {
-    await randomDelay();
+    await apiDelay();
     const limit = params?.limit ?? 20;
     const page = params?.page ?? 1;
     const start = (page - 1) * limit;
@@ -218,7 +219,7 @@ export const mockApi = {
   },
 
   async getTransaction(id: string) {
-    await randomDelay();
+    await apiDelay();
     const transaction = transactions.find((t) => t.id === id);
     if (!transaction) {
       throw new Error('NOT_FOUND');

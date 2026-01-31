@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Contacts from 'expo-contacts';
-import { Text, Icon, Input, Avatar, Button } from '@components/ui';
+import { Text, Icon, Input, Avatar, Button, Skeleton } from '@components/ui';
 import { colors, palette } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { borderRadius } from '@theme/borderRadius';
@@ -175,6 +175,21 @@ export function ContactPickerScreen({ navigation }: Props) {
     return phone;
   };
 
+  const renderContactSkeleton = () => (
+    <View style={styles.skeletonContainer}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <View key={i} style={styles.contactItem}>
+          <Skeleton width={48} height={48} borderRadius={24} />
+          <View style={styles.contactInfo}>
+            <Skeleton width="60%" height={15} />
+            <Skeleton width="40%" height={13} style={styles.skeletonSpacing} />
+          </View>
+          <Skeleton width={20} height={20} borderRadius={4} />
+        </View>
+      ))}
+    </View>
+  );
+
   const renderContact = ({ item }: { item: ContactItem }) => (
     <Pressable
       style={({ pressed }) => [
@@ -322,9 +337,7 @@ export function ContactPickerScreen({ navigation }: Props) {
       </View>
 
       {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading contacts...</Text>
-        </View>
+        renderContactSkeleton()
       ) : filteredContacts.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Icon name="users" size={48} color={colors.text.tertiary} />
@@ -426,14 +439,12 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.text.tertiary,
   },
-  loadingContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+  skeletonContainer: {
+    paddingHorizontal: spacing[4],
+    paddingTop: spacing[2],
   },
-  loadingText: {
-    fontSize: 14,
-    color: colors.text.tertiary,
+  skeletonSpacing: {
+    marginTop: 4,
   },
   emptyContainer: {
     flex: 1,

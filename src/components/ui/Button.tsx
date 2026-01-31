@@ -17,6 +17,7 @@ import { colors, palette } from '@theme/colors';
 import { componentRadius } from '@theme/borderRadius';
 import { componentShadows } from '@theme/shadows';
 import { spacing } from '@theme/spacing';
+import { mediumHaptic } from '@utils/haptics';
 import Text from './Text';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'accent';
@@ -141,9 +142,17 @@ export function Button({
     return {};
   }, [variant, isDisabled]);
 
+  const handlePress = useCallback(
+    (event: Parameters<NonNullable<PressableProps['onPress']>>[0]) => {
+      void mediumHaptic();
+      onPress?.(event);
+    },
+    [onPress]
+  );
+
   return (
     <Pressable
-      onPress={onPress}
+      onPress={handlePress}
       disabled={isDisabled}
       style={({ pressed }) => [
         styles.base,

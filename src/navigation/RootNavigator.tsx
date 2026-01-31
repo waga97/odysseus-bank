@@ -20,6 +20,8 @@ import { TransferProcessingScreen } from '@features/processing';
 import { TransferSuccessScreen } from '@features/success';
 import { TransferErrorScreen } from '@features/error';
 import { ContactPickerScreen } from '@features/contacts';
+import { TransferHistoryScreen } from '@features/history';
+import { SettingsScreen } from '@features/settings';
 import { PlaceholderScreen } from './PlaceholderScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -83,11 +85,11 @@ export function RootNavigator() {
       />
 
       {/* History */}
-      <Stack.Screen name="TransferHistory" component={PlaceholderScreen} />
+      <Stack.Screen name="TransferHistory" component={TransferHistoryScreen} />
       <Stack.Screen name="TransactionDetails" component={PlaceholderScreen} />
 
       {/* Settings */}
-      <Stack.Screen name="Settings" component={PlaceholderScreen} />
+      <Stack.Screen name="Settings" component={SettingsScreen} />
     </Stack.Navigator>
   );
 }

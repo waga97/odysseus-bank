@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
-import { Text, Icon } from '@components/ui';
+import { Text, Icon, Avatar, Skeleton } from '@components/ui';
 import { colors, palette } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { borderRadius } from '@theme/borderRadius';
@@ -15,40 +15,8 @@ import type { Transaction } from '@types';
 interface RecentActivityProps {
   onSeeAllPress?: () => void;
   onTransactionPress?: (transaction: Transaction) => void;
+  isLoading?: boolean;
 }
-
-// Map transaction types to icons and colors - updated for warm theme
-const transactionTypeConfig: Record<
-  string,
-  { iconName: string; bgColor: string; iconColor: string }
-> = {
-  transfer: {
-    iconName: 'send',
-    bgColor: colors.accent.bg,
-    iconColor: palette.accent.main,
-  },
-  payment: {
-    iconName: 'shopping-bag',
-    bgColor: '#fef3c7',
-    iconColor: '#d97706',
-  },
-  topup: {
-    iconName: 'plus',
-    bgColor: palette.success.light,
-    iconColor: palette.success.main,
-  },
-  withdrawal: {
-    iconName: 'arrow-down',
-    bgColor: palette.error.light,
-    iconColor: palette.error.main,
-  },
-};
-
-const DEFAULT_TX_CONFIG = {
-  iconName: 'send',
-  bgColor: colors.accent.bg,
-  iconColor: palette.accent.main,
-};
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
@@ -81,77 +49,91 @@ function formatAmount(amount: number, currency: string): string {
   })}`;
 }
 
+function TransactionSkeleton() {
+  return (
+    <View style={styles.transactionItem}>
+      <Skeleton width={48} height={48} borderRadius={borderRadius.full} />
+      <View style={styles.details}>
+        <Skeleton width="60%" height={15} />
+        <Skeleton width="40%" height={13} style={styles.skeletonSpacing} />
+      </View>
+      <Skeleton width={80} height={15} />
+    </View>
+  );
+}
+
 export function RecentActivity({
   onSeeAllPress,
   onTransactionPress,
+  isLoading = false,
 }: RecentActivityProps) {
   const transactions = useTransactions();
   const recentTransactions = transactions.slice(0, 5);
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <>
+          <TransactionSkeleton />
+          <TransactionSkeleton />
+          <TransactionSkeleton />
+        </>
+      );
+    }
+
+    if (recentTransactions.length === 0) {
+      return (
+        <View style={styles.emptyState}>
+          <Icon name="clock" size={40} color={colors.text.tertiary} />
+          <Text style={styles.emptyText}>No recent transactions</Text>
+        </View>
+      );
+    }
+
+    return recentTransactions.map((transaction) => (
+      <Pressable
+        key={transaction.id}
+        style={({ pressed }) => [
+          styles.transactionItem,
+          pressed && styles.transactionItemPressed,
+        ]}
+        onPress={() => onTransactionPress?.(transaction)}
+      >
+        {/* Avatar */}
+        <Avatar name={transaction.recipient.name} size="medium" />
+
+        {/* Details */}
+        <View style={styles.details}>
+          <Text style={styles.recipientName} numberOfLines={1}>
+            {transaction.recipient.name}
+          </Text>
+          <Text style={styles.dateText}>
+            {formatDate(transaction.createdAt)}
+          </Text>
+        </View>
+
+        {/* Amount */}
+        <Text style={styles.amountText}>
+          -{formatAmount(transaction.amount, transaction.currency)}
+        </Text>
+      </Pressable>
+    ));
+  };
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Recent Transactions</Text>
-        <Pressable onPress={onSeeAllPress}>
-          <Text style={styles.seeAllText}>See All</Text>
+        <Pressable onPress={onSeeAllPress} disabled={isLoading}>
+          <Text style={[styles.seeAllText, isLoading && styles.seeAllDisabled]}>
+            See All
+          </Text>
         </Pressable>
       </View>
 
       {/* Transaction List */}
-      <View style={styles.list}>
-        {recentTransactions.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Icon name="clock" size={40} color={colors.text.tertiary} />
-            <Text style={styles.emptyText}>No recent transactions</Text>
-          </View>
-        ) : (
-          recentTransactions.map((transaction) => {
-            const config =
-              transactionTypeConfig[transaction.type] ?? DEFAULT_TX_CONFIG;
-
-            return (
-              <Pressable
-                key={transaction.id}
-                style={({ pressed }) => [
-                  styles.transactionItem,
-                  pressed && styles.transactionItemPressed,
-                ]}
-                onPress={() => onTransactionPress?.(transaction)}
-              >
-                {/* Icon */}
-                <View
-                  style={[
-                    styles.iconContainer,
-                    { backgroundColor: config.bgColor },
-                  ]}
-                >
-                  <Icon
-                    name={config.iconName}
-                    size={18}
-                    color={config.iconColor}
-                  />
-                </View>
-
-                {/* Details */}
-                <View style={styles.details}>
-                  <Text style={styles.recipientName} numberOfLines={1}>
-                    {transaction.recipient.name}
-                  </Text>
-                  <Text style={styles.dateText}>
-                    {formatDate(transaction.createdAt)}
-                  </Text>
-                </View>
-
-                {/* Amount */}
-                <Text style={styles.amountText}>
-                  -{formatAmount(transaction.amount, transaction.currency)}
-                </Text>
-              </Pressable>
-            );
-          })
-        )}
-      </View>
+      <View style={styles.list}>{renderContent()}</View>
     </View>
   );
 }
@@ -177,6 +159,9 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: palette.accent.main,
   },
+  seeAllDisabled: {
+    opacity: 0.5,
+  },
   list: {
     gap: spacing[2],
   },
@@ -185,20 +170,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing[3],
     padding: spacing[3],
-    backgroundColor: colors.surface.primary,
+    backgroundColor: palette.primary.contrast,
     borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: colors.border.secondary,
   },
   transactionItemPressed: {
     backgroundColor: colors.background.tertiary,
-  },
-  iconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   details: {
     flex: 1,
@@ -229,6 +205,9 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 14,
     color: colors.text.tertiary,
+  },
+  skeletonSpacing: {
+    marginTop: 4,
   },
 });
 

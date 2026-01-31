@@ -3,7 +3,7 @@
  * Choose a bank for new recipient transfer
  */
 
-import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -13,39 +13,37 @@ import {
   StatusBar,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Text, Input, Icon } from '@components/ui';
-import { colors } from '@theme/colors';
+import { Text, Input, Icon, Avatar, Skeleton } from '@components/ui';
+import { colors, palette } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { borderRadius } from '@theme/borderRadius';
-import { shadows } from '@theme/shadows';
 import type { RootStackScreenProps } from '@navigation/types';
 import type { Bank } from '@types';
-import { bankApi } from '@services/api/endpoints';
+import { useBanks } from '@stores/accountStore';
 
 type Props = RootStackScreenProps<'BankSelection'>;
 
 type ListItem = Bank | { type: 'header'; title: string };
 
+// Skeleton component for bank items
+function BankItemSkeleton() {
+  return (
+    <View style={styles.bankItem}>
+      <Skeleton width={48} height={48} borderRadius={borderRadius.full} />
+      <View style={styles.bankInfo}>
+        <Skeleton width="70%" height={15} />
+        <Skeleton width="40%" height={13} style={styles.skeletonSpacing} />
+      </View>
+      <Skeleton width={20} height={20} borderRadius={4} />
+    </View>
+  );
+}
+
 export function BankSelectionScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
-  const [banks, setBanks] = useState<Bank[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    void loadBanks();
-  }, []);
-
-  const loadBanks = async () => {
-    try {
-      const data = await bankApi.getBanks();
-      setBanks(data);
-    } catch (error) {
-      console.error('Failed to load banks:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const banks = useBanks(); // Use pre-loaded banks from store
+  const isLoading = banks.length === 0;
 
   const handleBack = useCallback(() => {
     navigation.goBack();
@@ -90,19 +88,11 @@ export function BankSelectionScreen({ navigation }: Props) {
         ]}
         onPress={() => handleBankSelect(bank)}
       >
-        <View style={styles.bankIcon}>
-          <Text style={styles.bankInitial}>
-            {bank.shortName?.[0] ?? bank.name[0]}
-          </Text>
-        </View>
+        <Avatar name={bank.shortName ?? bank.name} size="medium" />
         <View style={styles.bankInfo}>
-          <Text variant="titleSmall" color="primary">
-            {bank.name}
-          </Text>
+          <Text style={styles.bankName}>{bank.name}</Text>
           {bank.shortName && (
-            <Text variant="caption" color="tertiary">
-              {bank.shortName}
-            </Text>
+            <Text style={styles.bankShortName}>{bank.shortName}</Text>
           )}
         </View>
         <Icon name="chevron-right" size={20} color={colors.text.tertiary} />
@@ -184,7 +174,15 @@ export function BankSelectionScreen({ navigation }: Props) {
 
   const ListEmptyComponent = useMemo(
     () =>
-      isLoading ? null : (
+      isLoading ? (
+        <View style={styles.skeletonContainer}>
+          <BankItemSkeleton />
+          <BankItemSkeleton />
+          <BankItemSkeleton />
+          <BankItemSkeleton />
+          <BankItemSkeleton />
+        </View>
+      ) : (
         <View style={styles.emptyContainer}>
           <Icon name="search" size={48} color={colors.text.disabled} />
           <Text
@@ -283,32 +281,28 @@ const styles = StyleSheet.create({
   bankItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    padding: spacing[3],
     gap: spacing[3],
-    paddingVertical: spacing[3],
-    paddingHorizontal: spacing[4],
-    marginHorizontal: spacing[2],
+    backgroundColor: palette.primary.contrast,
     borderRadius: borderRadius.lg,
+    marginHorizontal: spacing[4],
+    marginBottom: spacing[2],
   },
   bankItemPressed: {
     backgroundColor: colors.background.tertiary,
   },
-  bankIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: borderRadius.lg,
-    backgroundColor: colors.background.secondary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...shadows.sm,
-  },
-  bankInitial: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.primary[600],
-  },
   bankInfo: {
     flex: 1,
     gap: 2,
+  },
+  bankName: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.text.primary,
+  },
+  bankShortName: {
+    fontSize: 13,
+    color: colors.text.tertiary,
   },
   listContent: {
     paddingBottom: spacing[8],
@@ -321,6 +315,12 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     paddingHorizontal: spacing[8],
+  },
+  skeletonContainer: {
+    paddingTop: spacing[2],
+  },
+  skeletonSpacing: {
+    marginTop: 4,
   },
 });
 

@@ -6,7 +6,14 @@
 import React, { useCallback, useState, useMemo } from 'react';
 import { View, StyleSheet, Pressable, StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Text, Avatar, Icon, Input, Button } from '@components/ui';
+import {
+  Text,
+  Avatar,
+  Icon,
+  Input,
+  Button,
+  TransferLimitWarnings,
+} from '@components/ui';
 import { colors, palette } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { borderRadius } from '@theme/borderRadius';
@@ -14,6 +21,7 @@ import type { RootStackScreenProps } from '@navigation/types';
 import { useAccountStore } from '@stores/accountStore';
 import { useTransferStore } from '@stores/transferStore';
 import { formatCurrency, formatInputDisplay } from '@utils/currency';
+import { lightHaptic } from '@utils/haptics';
 
 type Props = RootStackScreenProps<'AmountEntry'>;
 
@@ -79,6 +87,8 @@ export function AmountEntryScreen({ navigation, route }: Props) {
   // Handle numpad press
   const handleNumpadPress = useCallback(
     (key: string) => {
+      void lightHaptic();
+
       if (key === 'backspace') {
         setAmount((prev) => prev.slice(0, -1));
         return;
@@ -114,6 +124,7 @@ export function AmountEntryScreen({ navigation, route }: Props) {
 
   // Handle quick amount
   const handleQuickAmount = useCallback((value: number) => {
+    void lightHaptic();
     setAmount(value.toString());
   }, []);
 
@@ -189,6 +200,20 @@ export function AmountEntryScreen({ navigation, route }: Props) {
           <Text style={styles.currencySymbol}>RM</Text>
           <Text style={styles.amountText}>{displayAmount}</Text>
         </View>
+
+        {/* Limit Warnings */}
+        {numericAmount > 0 && limits && (
+          <View style={styles.limitWarnings}>
+            <TransferLimitWarnings
+              amount={numericAmount}
+              dailyLimit={limits.daily.limit}
+              dailyRemaining={limits.daily.remaining}
+              monthlyLimit={limits.monthly.limit}
+              monthlyRemaining={limits.monthly.remaining}
+              perTransactionLimit={limits.perTransaction}
+            />
+          </View>
+        )}
 
         {validation.message && (
           <Text variant="bodySmall" color={colors.status.error} align="center">
@@ -378,6 +403,10 @@ const styles = StyleSheet.create({
   },
   quickAmountButtonPressed: {
     backgroundColor: colors.background.tertiary,
+  },
+  limitWarnings: {
+    width: '100%',
+    paddingHorizontal: spacing[4],
   },
   noteSection: {
     paddingHorizontal: spacing[4],

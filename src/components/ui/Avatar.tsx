@@ -56,6 +56,7 @@ export function Avatar({
   size = 'medium',
   style,
 }: AvatarProps) {
+  const [imageError, setImageError] = React.useState(false);
   const dimension = sizeMap[size];
   const initials = getInitials(name);
 
@@ -65,18 +66,21 @@ export function Avatar({
     borderRadius: borderRadius.full,
   };
 
-  if (source) {
+  // Show image if source exists and no error
+  if (source && !imageError) {
     return (
       <View style={[styles.container, containerStyle, style]}>
         <Image
           source={source}
           style={[styles.image, { width: dimension, height: dimension }]}
           resizeMode="cover"
+          onError={() => setImageError(true)}
         />
       </View>
     );
   }
 
+  // Fallback to initials
   return (
     <View style={[styles.container, styles.fallback, containerStyle, style]}>
       <Text variant={textVariantMap[size]} color={palette.primary.contrast}>

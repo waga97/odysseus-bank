@@ -192,11 +192,7 @@ export function ContactPickerScreen({ navigation }: Props) {
       ]}
       onPress={() => handleSelectContact(item)}
     >
-      <Avatar
-        name={item.name}
-        source={item.avatar ? { uri: item.avatar } : null}
-        size="medium"
-      />
+      <Avatar name={item.name} size="medium" />
       <View style={styles.contactInfo}>
         <Text variant="titleSmall" color="primary">
           {item.name}
@@ -286,13 +282,7 @@ export function ContactPickerScreen({ navigation }: Props) {
 
         {/* Contact Info */}
         <View style={styles.selectedContactHeader}>
-          <Avatar
-            name={selectedContact.name}
-            source={
-              selectedContact.avatar ? { uri: selectedContact.avatar } : null
-            }
-            size="large"
-          />
+          <Avatar name={selectedContact.name} size="large" />
           <Text variant="titleMedium" color="primary">
             {selectedContact.name}
           </Text>

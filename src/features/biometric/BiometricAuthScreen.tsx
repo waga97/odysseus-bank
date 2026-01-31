@@ -31,7 +31,6 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
 
   const [authState, setAuthState] = useState<AuthState>('idle');
   const [biometricType, setBiometricType] = useState<BiometricType>('none');
-  const [failedAttempts, setFailedAttempts] = useState(0);
   const [showPinFallback, setShowPinFallback] = useState(false);
   const [pin, setPin] = useState('');
 
@@ -118,9 +117,9 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
     try {
       const result = await LocalAuthentication.authenticateAsync({
         promptMessage: `Authorize transfer of RM ${amount.toFixed(2)}`,
-        cancelLabel: 'Use PIN',
-        disableDeviceFallback: true,
-        fallbackLabel: 'Use PIN',
+        cancelLabel: 'Cancel',
+        disableDeviceFallback: false, // Allow device passcode as fallback
+        fallbackLabel: 'Use Passcode',
       });
 
       if (result.success) {
@@ -136,15 +135,10 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
         }, 500);
       } else if (result.error === 'user_cancel') {
         setAuthState('cancelled');
-        setShowPinFallback(true);
+        // User cancelled - show option to retry or use app PIN
       } else {
         setAuthState('failed');
-        setFailedAttempts((prev) => prev + 1);
         triggerShake();
-
-        if (failedAttempts >= 2) {
-          setShowPinFallback(true);
-        }
       }
     } catch {
       setAuthState('failed');
@@ -188,7 +182,6 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
 
   const handleRetry = useCallback(() => {
     setAuthState('idle');
-    setFailedAttempts(0);
     void authenticate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

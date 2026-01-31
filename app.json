@@ -19,7 +19,8 @@
       "infoPlist": {
         "NSFaceIDUsageDescription": "Odysseus Bank uses Face ID to securely authenticate your transactions",
         "NSContactsUsageDescription": "Odysseus Bank needs access to your contacts to enable DuitNow transfers"
-      }
+      },
+      "appleTeamId": "TDCXGVM5YR"
     },
     "android": {
       "adaptiveIcon": {
@@ -27,7 +28,15 @@
         "backgroundColor": "#300a14"
       },
       "package": "com.odysseusbank.app",
-      "permissions": ["USE_BIOMETRIC", "USE_FINGERPRINT", "READ_CONTACTS"]
+      "permissions": [
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT",
+        "READ_CONTACTS",
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT",
+        "android.permission.READ_CONTACTS",
+        "android.permission.WRITE_CONTACTS"
+      ]
     },
     "web": {
       "bundler": "metro",

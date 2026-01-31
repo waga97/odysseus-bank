@@ -11,6 +11,7 @@ import { colors, palette } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { borderRadius } from '@theme/borderRadius';
 import type { RootStackScreenProps } from '@navigation/types';
+import { formatCurrency } from '@utils/currency';
 
 type Props = RootStackScreenProps<'TransferProcessing'>;
 
@@ -138,7 +139,7 @@ export function TransferProcessingScreen({ navigation, route }: Props) {
     outputRange: ['0%', '100%'],
   });
 
-  const formattedAmount = `RM ${amount.toFixed(2)}`;
+  const formattedAmount = formatCurrency(amount);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -202,9 +203,9 @@ export function TransferProcessingScreen({ navigation, route }: Props) {
 
         {/* Security Note */}
         <View style={styles.securityNote}>
-          <Icon name="shield" size={16} color={colors.text.tertiary} />
+          <Icon name="lock" size={16} color={colors.text.tertiary} />
           <Text variant="caption" color="tertiary">
-            Secured with 256-bit encryption
+            Secure transaction
           </Text>
         </View>
       </View>

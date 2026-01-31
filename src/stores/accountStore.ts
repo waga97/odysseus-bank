@@ -24,6 +24,7 @@ interface AccountState {
   banks: Bank[];
   isLoading: boolean;
   error: string | null;
+  isBalanceHidden: boolean;
 
   // Account Actions
   setAccounts: (accounts: Account[]) => void;
@@ -52,6 +53,10 @@ interface AccountState {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   reset: () => void;
+
+  // Balance Visibility
+  toggleBalanceVisibility: () => void;
+  setBalanceHidden: (hidden: boolean) => void;
 }
 
 const initialState = {
@@ -65,6 +70,7 @@ const initialState = {
   banks: [],
   isLoading: false,
   error: null,
+  isBalanceHidden: false,
 };
 
 export const useAccountStore = create<AccountState>((set, get) => ({
@@ -187,6 +193,12 @@ export const useAccountStore = create<AccountState>((set, get) => ({
   setError: (error) => set({ error }),
 
   reset: () => set(initialState),
+
+  // Balance Visibility
+  toggleBalanceVisibility: () =>
+    set((state) => ({ isBalanceHidden: !state.isBalanceHidden })),
+
+  setBalanceHidden: (hidden) => set({ isBalanceHidden: hidden }),
 }));
 
 /**
@@ -207,3 +219,8 @@ export const useTransactions = () =>
 export const useTransferLimits = () =>
   useAccountStore((state) => state.transferLimits);
 export const useBanks = () => useAccountStore((state) => state.banks);
+export const useBalanceVisibility = () =>
+  useAccountStore((state) => ({
+    isHidden: state.isBalanceHidden,
+    toggle: state.toggleBalanceVisibility,
+  }));

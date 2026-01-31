@@ -3,31 +3,25 @@
  * Large balance display with hide/show toggle
  */
 
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { Text, Icon } from '@components/ui';
 import { colors, palette } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { borderRadius } from '@theme/borderRadius';
-import { useBalance } from '@stores/accountStore';
+import { useBalance, useBalanceVisibility } from '@stores/accountStore';
+import { formatNumber } from '@utils/currency';
 
 export function BalanceCard() {
   const balance = useBalance();
-  const [isHidden, setIsHidden] = useState(false);
-
-  const toggleVisibility = useCallback(() => {
-    setIsHidden((prev) => !prev);
-  }, []);
+  const { isHidden, toggle: toggleVisibility } = useBalanceVisibility();
 
   const formatBalance = (
     amount: number
   ): { whole: string; decimal: string } => {
-    const formatted = amount.toLocaleString('en-MY', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-    const [whole, decimal] = formatted.split('.');
-    return { whole: whole ?? '0', decimal: decimal ?? '00' };
+    const whole = formatNumber(Math.floor(amount));
+    const decimal = (amount % 1).toFixed(2).slice(2);
+    return { whole, decimal };
   };
 
   const { whole, decimal } = formatBalance(balance);

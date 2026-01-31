@@ -9,8 +9,12 @@ import { Text, Icon } from '@components/ui';
 import { colors, palette } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { borderRadius } from '@theme/borderRadius';
-import { useAccounts } from '@stores/accountStore';
+import { useAccounts, useBalanceVisibility } from '@stores/accountStore';
+import { formatCurrency } from '@utils/currency';
 import type { Account } from '@types';
+
+// Masked balance display
+const MASKED_BALANCE = '••••';
 
 interface AccountCardsProps {
   onAccountPress?: (account: Account) => void;
@@ -41,11 +45,8 @@ function formatAccountNumber(accountNumber: string): string {
   return `**** ${accountNumber.slice(-4)}`;
 }
 
-function formatBalance(amount: number, currency: string): string {
-  return `${currency} ${amount.toLocaleString('en-MY', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
+function formatBalance(amount: number, _currency: string): string {
+  return formatCurrency(amount, true, 2);
 }
 
 export function AccountCards({
@@ -53,6 +54,7 @@ export function AccountCards({
   onAddAccountPress,
 }: AccountCardsProps) {
   const accounts = useAccounts();
+  const { isHidden } = useBalanceVisibility();
 
   return (
     <View style={styles.container}>
@@ -119,7 +121,9 @@ export function AccountCards({
                 style={[styles.cardBalance, { color: colorScheme.accent }]}
                 numberOfLines={1}
               >
-                {formatBalance(account.balance, account.currency)}
+                {isHidden
+                  ? MASKED_BALANCE
+                  : formatBalance(account.balance, account.currency)}
               </Text>
             </Pressable>
           );

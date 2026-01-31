@@ -152,9 +152,7 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing[4],
     marginBottom: spacing[2],
     borderRadius: borderRadius.lg,
-    backgroundColor: colors.surface.primary,
-    borderWidth: 1,
-    borderColor: colors.border.secondary,
+    backgroundColor: palette.primary.contrast,
   },
   recipientItemPressed: {
     backgroundColor: colors.background.tertiary,

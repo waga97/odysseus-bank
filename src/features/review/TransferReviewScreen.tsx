@@ -18,6 +18,7 @@ import { spacing } from '@theme/spacing';
 import { borderRadius } from '@theme/borderRadius';
 import type { RootStackScreenProps } from '@navigation/types';
 import { useAccountStore } from '@stores/accountStore';
+import { formatCurrency } from '@utils/currency';
 
 type Props = RootStackScreenProps<'TransferReview'>;
 
@@ -48,7 +49,7 @@ export function TransferReviewScreen({ navigation, route }: Props) {
   }, [amount, recipient, note, navigation]);
 
   // Format amount
-  const formattedAmount = `RM ${amount.toFixed(2)}`;
+  const formattedAmount = formatCurrency(amount);
 
   // Calculate new balance
   const currentBalance = defaultAccount?.balance ?? 0;
@@ -162,7 +163,7 @@ export function TransferReviewScreen({ navigation, route }: Props) {
               Current balance
             </Text>
             <Text variant="bodySmall" color="primary">
-              RM {currentBalance.toFixed(2)}
+              {formatCurrency(currentBalance)}
             </Text>
           </View>
           <View style={styles.balanceRow}>
@@ -173,7 +174,7 @@ export function TransferReviewScreen({ navigation, route }: Props) {
               variant="bodySmall"
               color={newBalance < 100 ? colors.status.warning : 'primary'}
             >
-              RM {newBalance.toFixed(2)}
+              {formatCurrency(newBalance)}
             </Text>
           </View>
         </View>
@@ -192,7 +193,7 @@ export function TransferReviewScreen({ navigation, route }: Props) {
               style={styles.warningText}
             >
               You&apos;re approaching your daily transfer limit. Remaining after
-              this transfer: RM {(dailyRemaining - amount).toFixed(2)}
+              this transfer: {formatCurrency(dailyRemaining - amount)}
             </Text>
           </View>
         )}

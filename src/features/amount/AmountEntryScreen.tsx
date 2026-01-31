@@ -13,6 +13,7 @@ import { borderRadius } from '@theme/borderRadius';
 import type { RootStackScreenProps } from '@navigation/types';
 import { useAccountStore } from '@stores/accountStore';
 import { useTransferStore } from '@stores/transferStore';
+import { formatCurrency, formatInputDisplay } from '@utils/currency';
 
 type Props = RootStackScreenProps<'AmountEntry'>;
 
@@ -54,21 +55,21 @@ export function AmountEntryScreen({ navigation, route }: Props) {
     if (numericAmount > balance) {
       return {
         valid: false,
-        message: `Insufficient balance. Available: RM ${balance.toFixed(2)}`,
+        message: `Insufficient balance. Available: ${formatCurrency(balance)}`,
       };
     }
 
     if (numericAmount > dailyRemaining) {
       return {
         valid: false,
-        message: `Exceeds daily limit. Remaining: RM ${dailyRemaining.toFixed(2)}`,
+        message: `Exceeds daily limit. Remaining: ${formatCurrency(dailyRemaining)}`,
       };
     }
 
     if (numericAmount > perTransaction) {
       return {
         valid: false,
-        message: `Max per transaction: RM ${perTransaction.toFixed(2)}`,
+        message: `Max per transaction: ${formatCurrency(perTransaction)}`,
       };
     }
 
@@ -140,12 +141,9 @@ export function AmountEntryScreen({ navigation, route }: Props) {
     setStoreNote,
   ]);
 
-  // Format display amount
+  // Format display amount with thousand separators
   const displayAmount = useMemo(() => {
-    if (amount === '') {
-      return '0';
-    }
-    return amount;
+    return formatInputDisplay(amount);
   }, [amount]);
 
   return (

@@ -149,8 +149,8 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 15,
-    fontFamily: typography.bodyMedium.fontFamily,
-    fontWeight: typography.bodyMedium.fontWeight,
+    fontFamily: typography.bodyMedium?.fontFamily,
+    fontWeight: typography.bodyMedium?.fontWeight,
     color: colors.text.primary,
     textAlignVertical: 'center',
     paddingVertical: 0,

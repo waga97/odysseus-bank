@@ -1,6 +1,6 @@
 /**
  * Odysseus Bank - Quick Actions
- * Horizontal row of action buttons (similar to Sendfie design)
+ * Modern action buttons with visual hierarchy and subtle shadows
  */
 
 import React from 'react';
@@ -19,30 +19,30 @@ interface QuickAction {
 }
 
 interface QuickActionsProps {
-  onDepositPress?: () => void;
-  onPayPress?: () => void;
+  onScanPress?: () => void;
+  onAddMoneyPress?: () => void;
   onTransferPress?: () => void;
-  onRequestPress?: () => void;
+  onReceivePress?: () => void;
 }
 
 export function QuickActions({
-  onDepositPress,
-  onPayPress,
+  onScanPress,
+  onAddMoneyPress,
   onTransferPress,
-  onRequestPress,
+  onReceivePress,
 }: QuickActionsProps) {
   const actions: QuickAction[] = [
     {
-      id: 'deposit',
-      label: 'Deposit',
-      iconName: 'arrow-down',
-      onPress: onDepositPress ?? (() => {}),
+      id: 'scan',
+      label: 'Scan',
+      iconName: 'maximize',
+      onPress: onScanPress ?? (() => {}),
     },
     {
-      id: 'pay',
-      label: 'Pay',
-      iconName: 'credit-card',
-      onPress: onPayPress ?? (() => {}),
+      id: 'add-money',
+      label: 'Add Money',
+      iconName: 'plus',
+      onPress: onAddMoneyPress ?? (() => {}),
     },
     {
       id: 'transfer',
@@ -52,10 +52,10 @@ export function QuickActions({
       onPress: onTransferPress ?? (() => {}),
     },
     {
-      id: 'request',
-      label: 'Request',
+      id: 'receive',
+      label: 'Receive',
       iconName: 'arrow-down-left',
-      onPress: onRequestPress ?? (() => {}),
+      onPress: onReceivePress ?? (() => {}),
     },
   ];
 
@@ -64,27 +64,28 @@ export function QuickActions({
       {actions.map((action) => (
         <Pressable
           key={action.id}
-          style={styles.actionButton}
+          style={({ pressed }) => [
+            styles.actionButton,
+            pressed && styles.actionButtonPressed,
+          ]}
           onPress={action.onPress}
         >
           {({ pressed }) => (
             <>
               <View
                 style={[
-                  styles.iconContainer,
-                  action.isPrimary && styles.iconContainerPrimary,
-                  pressed && styles.iconContainerPressed,
+                  styles.iconWrapper,
+                  action.isPrimary && styles.iconWrapperPrimary,
+                  pressed && styles.iconWrapperPressed,
                 ]}
               >
                 <Icon
                   name={action.iconName}
-                  size={22}
+                  size={24}
                   color={
-                    pressed
-                      ? palette.accent.main
-                      : action.isPrimary
-                        ? palette.primary.contrast
-                        : palette.accent.main
+                    pressed || action.isPrimary
+                      ? palette.primary.contrast
+                      : palette.accent.main
                   }
                 />
               </View>
@@ -107,34 +108,39 @@ export function QuickActions({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    gap: spacing[2],
-    paddingHorizontal: spacing[4],
-    marginTop: spacing[4],
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing[5],
+    marginTop: spacing[5],
   },
   actionButton: {
     alignItems: 'center',
-    gap: spacing[1],
-    paddingVertical: spacing[1],
-    paddingHorizontal: spacing[1],
+    gap: spacing[2],
   },
-  iconContainer: {
-    width: 64,
-    height: 48,
-    borderRadius: borderRadius.lg,
-    backgroundColor: colors.accent.bg,
+  actionButtonPressed: {
+    transform: [{ scale: 0.95 }],
+  },
+  iconWrapper: {
+    width: 60,
+    height: 60,
+    borderRadius: borderRadius.xl,
+    backgroundColor: palette.primary.contrast,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: palette.accent.light,
+    shadowColor: colors.shadow.color,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  iconContainerPrimary: {
+  iconWrapperPrimary: {
     backgroundColor: palette.accent.main,
-    borderColor: palette.accent.main,
+    shadowColor: palette.accent.dark,
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
   },
-  iconContainerPressed: {
+  iconWrapperPressed: {
     backgroundColor: palette.primary.main,
-    borderColor: palette.primary.main,
   },
   labelText: {
     fontSize: 13,

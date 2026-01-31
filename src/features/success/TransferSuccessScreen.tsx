@@ -17,6 +17,7 @@ import { Text, Icon, Button, Divider } from '@components/ui';
 import { colors, palette } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { borderRadius } from '@theme/borderRadius';
+import { formatCurrency } from '@utils/currency';
 import type { RootStackScreenProps } from '@navigation/types';
 
 type Props = RootStackScreenProps<'TransferSuccess'>;
@@ -76,7 +77,7 @@ export function TransferSuccessScreen({ navigation, route }: Props) {
     const message = `
 Transfer Receipt - Odysseus Bank
 
-Amount: RM ${transaction.amount.toFixed(2)}
+Amount: ${formatCurrency(transaction.amount)}
 To: ${transaction.recipientName}
 ${transaction.recipientAccount ? `Account: ****${transaction.recipientAccount.slice(-4)}` : ''}
 ${transaction.bankName ? `Bank: ${transaction.bankName}` : ''}
@@ -108,7 +109,7 @@ Thank you for using Odysseus Bank.
     });
   };
 
-  const formattedAmount = `RM ${transaction.amount.toFixed(2)}`;
+  const formattedAmount = formatCurrency(transaction.amount);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>

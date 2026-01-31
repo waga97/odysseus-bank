@@ -19,6 +19,7 @@ import { colors, palette } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { borderRadius } from '@theme/borderRadius';
 import type { RootStackScreenProps } from '@navigation/types';
+import { formatCurrency } from '@utils/currency';
 
 type Props = RootStackScreenProps<'BiometricAuth'>;
 
@@ -117,7 +118,7 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
 
     try {
       const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: `Authorize transfer of RM ${amount.toFixed(2)}`,
+        promptMessage: `Authorize transfer of ${formatCurrency(amount)}`,
         cancelLabel: 'Cancel',
         disableDeviceFallback: false,
         fallbackLabel: 'Use Passcode',
@@ -249,7 +250,7 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
     }
   };
 
-  const formattedAmount = `RM ${amount.toFixed(2)}`;
+  const formattedAmount = formatCurrency(amount);
 
   // PIN Input UI
   if (showPinFallback) {

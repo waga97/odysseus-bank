@@ -60,7 +60,7 @@ export function Header({ onNotificationPress, onProfilePress }: HeaderProps) {
         </Pressable>
 
         {/* Profile Avatar */}
-        <Pressable onPress={onProfilePress}>
+        <Pressable style={styles.avatarContainer} onPress={onProfilePress}>
           <Avatar name={user?.name ?? 'User'} size="medium" />
         </Pressable>
       </View>
@@ -76,7 +76,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[5],
     paddingBottom: spacing[8],
     backgroundColor: palette.primary.main,
-    // Straight edge - the body will have the curve
   },
   leftContent: {
     gap: spacing[1],
@@ -120,6 +119,11 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: borderRadius.full,
     backgroundColor: palette.accent.main,
+  },
+  avatarContainer: {
+    borderWidth: 1.5,
+    borderColor: palette.accent.main,
+    borderRadius: borderRadius.full,
   },
 });
 

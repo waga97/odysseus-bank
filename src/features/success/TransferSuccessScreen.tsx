@@ -17,7 +17,6 @@ import { Text, Icon, Button, Divider } from '@components/ui';
 import { colors, palette } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { borderRadius } from '@theme/borderRadius';
-import { shadows } from '@theme/shadows';
 import type { RootStackScreenProps } from '@navigation/types';
 
 type Props = RootStackScreenProps<'TransferSuccess'>;
@@ -292,34 +291,35 @@ Thank you for using Odysseus Bank.
           ]}
         >
           <Button
-            variant="secondary"
+            variant="accent"
             size="medium"
             onPress={() => void handleShare()}
-            leftIcon={
-              <Icon name="share-2" size={18} color={palette.primary.main} />
-            }
+            leftIcon={<Icon name="share-2" size={18} color="#ffffff" />}
           >
             Share Receipt
           </Button>
         </Animated.View>
-      </ScrollView>
 
-      {/* Bottom Buttons */}
-      <View
-        style={[styles.bottomContainer, { paddingBottom: insets.bottom + 16 }]}
-      >
-        <Button variant="primary" size="large" fullWidth onPress={handleDone}>
-          Done
-        </Button>
-        <Button
-          variant="ghost"
-          size="large"
-          fullWidth
-          onPress={handleNewTransfer}
+        {/* Bottom Buttons - Inside ScrollView */}
+        <View
+          style={[
+            styles.bottomContainer,
+            { paddingBottom: insets.bottom + 16 },
+          ]}
         >
-          Make Another Transfer
-        </Button>
-      </View>
+          <Button variant="primary" size="large" fullWidth onPress={handleDone}>
+            Done
+          </Button>
+          <Button
+            variant="ghost"
+            size="large"
+            fullWidth
+            onPress={handleNewTransfer}
+          >
+            Make Another Transfer
+          </Button>
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -327,23 +327,23 @@ Thank you for using Odysseus Bank.
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.background.primary,
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
     padding: spacing[4],
-    paddingTop: spacing[8],
+    paddingTop: spacing[6],
   },
   successHeader: {
     alignItems: 'center',
     gap: spacing[2],
-    marginBottom: spacing[6],
+    marginBottom: spacing[4],
   },
   successIconContainer: {
-    width: 88,
-    height: 88,
+    width: 80,
+    height: 80,
     borderRadius: borderRadius.full,
     backgroundColor: colors.status.successBg,
     alignItems: 'center',
@@ -351,35 +351,34 @@ const styles = StyleSheet.create({
     marginBottom: spacing[2],
   },
   amountText: {
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: '700',
     color: colors.text.primary,
-    lineHeight: 44,
-    marginTop: spacing[2],
+    lineHeight: 40,
+    marginTop: spacing[1],
   },
   receiptCard: {
-    backgroundColor: colors.background.primary,
+    backgroundColor: palette.primary.contrast,
     borderRadius: borderRadius.xl,
-    ...shadows.md,
     overflow: 'hidden',
   },
   zigzagTop: {
-    height: 10,
-    backgroundColor: colors.background.secondary,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
+    height: 8,
+    backgroundColor: colors.background.primary,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
   },
   zigzagBottom: {
-    height: 10,
-    backgroundColor: colors.background.secondary,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
+    height: 8,
+    backgroundColor: colors.background.primary,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
   },
   receiptContent: {
-    padding: spacing[5],
+    padding: spacing[4],
   },
   receiptTitle: {
-    marginBottom: spacing[4],
+    marginBottom: spacing[3],
     letterSpacing: 0.5,
   },
   receiptRow: {
@@ -398,13 +397,10 @@ const styles = StyleSheet.create({
   },
   shareContainer: {
     alignItems: 'center',
-    marginTop: spacing[6],
-    marginBottom: spacing[4],
+    marginTop: spacing[4],
   },
   bottomContainer: {
-    paddingHorizontal: spacing[4],
-    paddingTop: spacing[3],
-    backgroundColor: colors.background.secondary,
+    marginTop: spacing[6],
     gap: spacing[2],
   },
 });

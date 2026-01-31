@@ -1,14 +1,20 @@
 /**
  * Odysseus Bank - Home Screen
- * Main dashboard with balance, quick actions, and recent activity
+ * Main dashboard with warm cream/orange theme
  */
 
 import React, { useEffect, useCallback } from 'react';
-import { View, ScrollView, StyleSheet, RefreshControl } from 'react-native';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  RefreshControl,
+  StatusBar,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@navigation/types';
-import { colors } from '@theme/colors';
+import { colors, palette } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { useAuthStore } from '@stores/authStore';
 import { useAccountStore } from '@stores/accountStore';
@@ -23,7 +29,7 @@ import {
   Header,
   BalanceCard,
   QuickActions,
-  PromoBanner,
+  AccountCards,
   RecentActivity,
   BottomNav,
 } from './components';
@@ -121,36 +127,44 @@ export function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Status bar with light content for black header */}
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={palette.primary.main}
+      />
+
+      {/* Black Header */}
       <Header onProfilePress={handleSettingsPress} />
 
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={isLoading}
-            onRefresh={() => void loadData()}
-            tintColor={colors.interactive.primary}
-          />
-        }
-      >
-        {/* Balance Display */}
-        <BalanceCard />
+      {/* Body with curved top - overlaps header */}
+      <View style={styles.bodyContainer}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isLoading}
+              onRefresh={() => void loadData()}
+              tintColor={palette.accent.main}
+            />
+          }
+        >
+          {/* Balance Display */}
+          <BalanceCard />
 
-        {/* Quick Actions */}
-        <QuickActions onTransferPress={handleTransferPress} />
+          {/* Quick Actions */}
+          <QuickActions onTransferPress={handleTransferPress} />
 
-        {/* Promo Banner */}
-        <View style={styles.bannerSection}>
-          <PromoBanner onPress={handleTransferPress} />
-        </View>
+          {/* Account Cards - Horizontal Scroll */}
+          <AccountCards />
 
-        {/* Recent Activity */}
-        <RecentActivity onSeeAllPress={handleSeeAllTransactions} />
-      </ScrollView>
+          {/* Recent Transactions */}
+          <RecentActivity onSeeAllPress={handleSeeAllTransactions} />
+        </ScrollView>
+      </View>
 
-      {/* Bottom Navigation - now part of layout flow, not absolute */}
+      {/* Bottom Navigation */}
       <BottomNav activeTab="home" onTabPress={handleTabPress} />
     </View>
   );
@@ -159,17 +173,22 @@ export function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: palette.primary.main, // Black behind the header
+  },
+  bodyContainer: {
+    flex: 1,
+    backgroundColor: colors.background.primary,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    marginTop: -spacing[4], // Pull up to overlap header
+    overflow: 'hidden',
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: spacing[6], // Add spacing before bottom nav
-  },
-  bannerSection: {
-    marginTop: spacing[6],
+    paddingBottom: spacing[6],
   },
 });
 

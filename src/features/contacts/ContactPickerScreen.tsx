@@ -1,6 +1,6 @@
 /**
  * Odysseus Bank - Contact Picker Screen
- * Select contacts for DuitNow transfer with phone number
+ * Select contacts for DuitNow transfer with phone number - warm theme
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
@@ -88,11 +88,7 @@ export function ContactPickerScreen({ navigation }: Props) {
     try {
       setIsLoading(true);
       const { data } = await Contacts.getContactsAsync({
-        fields: [
-          Contacts.Fields.Name,
-          Contacts.Fields.PhoneNumbers,
-          Contacts.Fields.Image,
-        ],
+        fields: [Contacts.Fields.Name, Contacts.Fields.PhoneNumbers],
         sort: Contacts.SortTypes.FirstName,
       });
 
@@ -107,7 +103,6 @@ export function ContactPickerScreen({ navigation }: Props) {
           phoneNumbers:
             contact.phoneNumbers?.map((p) => p.number ?? '').filter(Boolean) ??
             [],
-          avatar: contact.image?.uri,
         }));
 
       setContacts(transformedContacts);
@@ -129,7 +124,6 @@ export function ContactPickerScreen({ navigation }: Props) {
 
   const navigateToAmount = useCallback(
     (contact: ContactItem, phone: string) => {
-      // Format phone number (remove spaces, dashes)
       const formattedPhone = phone.replace(/[\s\-()]/g, '');
 
       navigation.navigate('AmountEntry', {
@@ -148,10 +142,8 @@ export function ContactPickerScreen({ navigation }: Props) {
   const handleSelectContact = useCallback(
     (contact: ContactItem) => {
       if (contact.phoneNumbers.length === 1 && contact.phoneNumbers[0]) {
-        // Single phone number, navigate directly
         navigateToAmount(contact, contact.phoneNumbers[0]);
       } else {
-        // Multiple numbers, show selection
         setSelectedContact(contact);
       }
     },
@@ -173,7 +165,6 @@ export function ContactPickerScreen({ navigation }: Props) {
   }, []);
 
   const formatPhoneNumber = (phone: string) => {
-    // Simple formatting for Malaysian numbers
     const cleaned = phone.replace(/[\s\-()]/g, '');
     if (cleaned.startsWith('+60')) {
       return cleaned.replace(/(\+60)(\d{2})(\d{3,4})(\d{4})/, '$1 $2-$3 $4');
@@ -194,10 +185,8 @@ export function ContactPickerScreen({ navigation }: Props) {
     >
       <Avatar name={item.name} size="medium" />
       <View style={styles.contactInfo}>
-        <Text variant="titleSmall" color="primary">
-          {item.name}
-        </Text>
-        <Text variant="caption" color="tertiary">
+        <Text style={styles.contactName}>{item.name}</Text>
+        <Text style={styles.contactPhone}>
           {formatPhoneNumber(item.phoneNumbers[0] ?? '')}
           {item.phoneNumbers.length > 1 &&
             ` +${item.phoneNumbers.length - 1} more`}
@@ -213,35 +202,20 @@ export function ContactPickerScreen({ navigation }: Props) {
       <View style={[styles.container, { paddingTop: insets.top }]}>
         <StatusBar barStyle="dark-content" />
 
-        {/* Header */}
         <View style={styles.header}>
           <Pressable style={styles.backButton} onPress={handleBack}>
-            <Icon name="arrow-left" size={24} color={colors.text.primary} />
+            <Icon name="arrow-left" size={22} color={colors.text.primary} />
           </Pressable>
-          <Text
-            variant="titleMedium"
-            color="primary"
-            style={styles.headerTitle}
-          >
-            Select Contact
-          </Text>
+          <Text style={styles.headerTitle}>Select Contact</Text>
           <View style={styles.headerSpacer} />
         </View>
 
-        {/* Permission Denied Content */}
         <View style={styles.permissionContainer}>
           <View style={styles.permissionIconContainer}>
             <Icon name="users" size={48} color={colors.text.tertiary} />
           </View>
-          <Text variant="titleMedium" color="primary" align="center">
-            Contact Access Required
-          </Text>
-          <Text
-            variant="bodyMedium"
-            color="secondary"
-            align="center"
-            style={styles.permissionText}
-          >
+          <Text style={styles.permissionTitle}>Contact Access Required</Text>
+          <Text style={styles.permissionText}>
             To send money via DuitNow, we need access to your contacts to find
             recipients by phone number.
           </Text>
@@ -262,36 +236,25 @@ export function ContactPickerScreen({ navigation }: Props) {
       <View style={[styles.container, { paddingTop: insets.top }]}>
         <StatusBar barStyle="dark-content" />
 
-        {/* Header */}
         <View style={styles.header}>
           <Pressable
             style={styles.backButton}
             onPress={handleCancelPhoneSelection}
           >
-            <Icon name="arrow-left" size={24} color={colors.text.primary} />
+            <Icon name="arrow-left" size={22} color={colors.text.primary} />
           </Pressable>
-          <Text
-            variant="titleMedium"
-            color="primary"
-            style={styles.headerTitle}
-          >
-            Select Number
-          </Text>
+          <Text style={styles.headerTitle}>Select Number</Text>
           <View style={styles.headerSpacer} />
         </View>
 
-        {/* Contact Info */}
         <View style={styles.selectedContactHeader}>
           <Avatar name={selectedContact.name} size="large" />
-          <Text variant="titleMedium" color="primary">
-            {selectedContact.name}
-          </Text>
-          <Text variant="bodySmall" color="tertiary">
+          <Text style={styles.selectedContactName}>{selectedContact.name}</Text>
+          <Text style={styles.selectedContactSubtitle}>
             Select a phone number for DuitNow transfer
           </Text>
         </View>
 
-        {/* Phone Numbers List */}
         <View style={styles.phoneListContainer}>
           {selectedContact.phoneNumbers.map((phone, index) => (
             <Pressable
@@ -304,15 +267,13 @@ export function ContactPickerScreen({ navigation }: Props) {
               onPress={() => handleSelectPhone(phone)}
             >
               <View style={styles.phoneIconContainer}>
-                <Icon name="phone" size={20} color={palette.primary.main} />
+                <Icon name="phone" size={20} color={palette.accent.main} />
               </View>
               <View style={styles.phoneInfo}>
-                <Text variant="bodyMedium" color="primary">
+                <Text style={styles.phoneNumber}>
                   {formatPhoneNumber(phone)}
                 </Text>
-                <Text variant="caption" color="tertiary">
-                  Mobile
-                </Text>
+                <Text style={styles.phoneLabel}>Mobile</Text>
               </View>
               <Icon
                 name="chevron-right"
@@ -331,18 +292,14 @@ export function ContactPickerScreen({ navigation }: Props) {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <StatusBar barStyle="dark-content" />
 
-      {/* Header */}
       <View style={styles.header}>
         <Pressable style={styles.backButton} onPress={handleBack}>
-          <Icon name="arrow-left" size={24} color={colors.text.primary} />
+          <Icon name="arrow-left" size={22} color={colors.text.primary} />
         </Pressable>
-        <Text variant="titleMedium" color="primary" style={styles.headerTitle}>
-          Select Contact
-        </Text>
+        <Text style={styles.headerTitle}>Select Contact</Text>
         <View style={styles.headerSpacer} />
       </View>
 
-      {/* Search */}
       <View style={styles.searchContainer}>
         <Input
           placeholder="Search contacts..."
@@ -356,26 +313,22 @@ export function ContactPickerScreen({ navigation }: Props) {
         />
       </View>
 
-      {/* DuitNow Info Banner */}
       <View style={styles.infoBanner}>
-        <Icon name="info" size={18} color={palette.primary.main} />
-        <Text variant="caption" color="secondary" style={styles.infoBannerText}>
+        <Icon name="info" size={18} color={palette.accent.main} />
+        <Text style={styles.infoBannerText}>
           Send money instantly using the recipient&apos;s phone number via
           DuitNow
         </Text>
       </View>
 
-      {/* Contact List */}
       {isLoading ? (
         <View style={styles.loadingContainer}>
-          <Text variant="bodyMedium" color="tertiary">
-            Loading contacts...
-          </Text>
+          <Text style={styles.loadingText}>Loading contacts...</Text>
         </View>
       ) : filteredContacts.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Icon name="users" size={48} color={colors.text.tertiary} />
-          <Text variant="bodyMedium" color="tertiary" align="center">
+          <Text style={styles.emptyText}>
             {searchQuery
               ? 'No contacts found'
               : 'No contacts with phone numbers'}
@@ -413,9 +366,13 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.full,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: colors.surface.secondary,
   },
   headerTitle: {
     flex: 1,
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text.primary,
     textAlign: 'center',
   },
   headerSpacer: {
@@ -432,11 +389,13 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing[4],
     marginBottom: spacing[3],
     padding: spacing[3],
-    backgroundColor: colors.primary[50],
+    backgroundColor: colors.accent.bg,
     borderRadius: borderRadius.lg,
   },
   infoBannerText: {
     flex: 1,
+    fontSize: 13,
+    color: colors.text.secondary,
   },
   listContent: {
     paddingHorizontal: spacing[4],
@@ -447,9 +406,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: spacing[3],
     gap: spacing[3],
-    backgroundColor: colors.background.primary,
+    backgroundColor: colors.surface.primary,
     borderRadius: borderRadius.lg,
     marginBottom: spacing[2],
+    borderWidth: 1,
+    borderColor: colors.border.secondary,
   },
   contactItemPressed: {
     backgroundColor: colors.background.tertiary,
@@ -458,10 +419,23 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 2,
   },
+  contactName: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.text.primary,
+  },
+  contactPhone: {
+    fontSize: 13,
+    color: colors.text.tertiary,
+  },
   loadingContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  loadingText: {
+    fontSize: 14,
+    color: colors.text.tertiary,
   },
   emptyContainer: {
     flex: 1,
@@ -469,6 +443,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: spacing[3],
     paddingHorizontal: spacing[6],
+  },
+  emptyText: {
+    fontSize: 14,
+    color: colors.text.tertiary,
+    textAlign: 'center',
   },
   // Permission denied styles
   permissionContainer: {
@@ -487,7 +466,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: spacing[2],
   },
+  permissionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text.primary,
+    textAlign: 'center',
+  },
   permissionText: {
+    fontSize: 14,
+    color: colors.text.secondary,
+    textAlign: 'center',
     maxWidth: 280,
     marginBottom: spacing[4],
   },
@@ -499,6 +487,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border.primary,
   },
+  selectedContactName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text.primary,
+  },
+  selectedContactSubtitle: {
+    fontSize: 14,
+    color: colors.text.tertiary,
+  },
   phoneListContainer: {
     padding: spacing[4],
     gap: spacing[2],
@@ -508,7 +505,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: spacing[4],
     gap: spacing[3],
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.surface.primary,
     borderRadius: borderRadius.lg,
     borderWidth: 1,
     borderColor: colors.border.primary,
@@ -517,20 +514,29 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background.tertiary,
   },
   phoneItemSelected: {
-    borderColor: palette.primary.main,
-    backgroundColor: colors.primary[50],
+    borderColor: palette.accent.main,
+    backgroundColor: colors.accent.bg,
   },
   phoneIconContainer: {
     width: 40,
     height: 40,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.primary[50],
+    backgroundColor: colors.accent.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   phoneInfo: {
     flex: 1,
     gap: 2,
+  },
+  phoneNumber: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: colors.text.primary,
+  },
+  phoneLabel: {
+    fontSize: 13,
+    color: colors.text.tertiary,
   },
 });
 

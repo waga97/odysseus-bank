@@ -1,6 +1,6 @@
 /**
  * Odysseus Bank - Transfer Hub Screen
- * Main transfer screen with tabs and recipient selection
+ * Main transfer screen with tabs and recipient selection - warm theme
  */
 
 import React, { useState, useCallback } from 'react';
@@ -8,7 +8,7 @@ import { View, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@navigation/types';
-import { Text, Button } from '@components/ui';
+import { Button, Icon } from '@components/ui';
 import { colors, palette } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { useRecentRecipients } from '@stores/accountStore';
@@ -135,7 +135,13 @@ export function TransferHubScreen() {
             size="large"
             fullWidth
             onPress={handleNewTransfer}
-            rightIcon={<Text style={styles.buttonIcon}>→</Text>}
+            rightIcon={
+              <Icon
+                name="arrow-right"
+                size={18}
+                color={palette.primary.contrast}
+              />
+            }
           >
             {activeTab === 'mobile'
               ? 'Choose from contacts'
@@ -150,7 +156,7 @@ export function TransferHubScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.background.primary,
   },
   content: {
     flex: 1,
@@ -163,18 +169,13 @@ const styles = StyleSheet.create({
   },
   gradient: {
     height: 48,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.background.primary,
     opacity: 0.9,
   },
   buttonWrapper: {
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.background.primary,
     paddingHorizontal: spacing[5],
     paddingBottom: spacing[8],
-  },
-  buttonIcon: {
-    color: palette.primary.contrast,
-    fontSize: 18,
-    marginLeft: spacing[2],
   },
 });
 

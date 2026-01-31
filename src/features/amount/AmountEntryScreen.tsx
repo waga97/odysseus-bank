@@ -97,7 +97,7 @@ export function AmountEntryScreen({ navigation, route }: Props) {
 
       // Limit decimal places to 2
       const parts = amount.split('.');
-      if (parts.length === 2 && parts[1].length >= 2) {
+      if (parts.length === 2 && (parts[1]?.length ?? 0) >= 2) {
         return;
       }
 
@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing[2],
   },
   noteInput: {
-    backgroundColor: colors.background.secondary,
+    // Uses standardized Input component styling
   },
   addNoteButton: {
     flexDirection: 'row',

@@ -1,41 +1,49 @@
 /**
  * Odysseus Bank - Color Palette
- * Design tokens extracted from mockup design language
+ * Warm cream/orange theme inspired by modern fintech apps
  */
 
 export const palette = {
   // Brand colors
   primary: {
-    main: '#300a14',
-    light: '#4a1a2a',
-    dark: '#1a0508',
+    main: '#1a1a1a', // Black for header
+    light: '#333333',
+    dark: '#000000',
     contrast: '#ffffff',
   },
 
-  // Neutrals
+  // Accent color (Orange/Amber)
+  accent: {
+    main: '#f5a623', // Warm orange
+    light: '#ffc966',
+    dark: '#d4860c',
+    contrast: '#ffffff',
+  },
+
+  // Neutrals (warm tinted)
   neutral: {
-    50: '#f8fafc',
-    100: '#f1f5f9',
-    200: '#e2e8f0',
-    300: '#cbd5e1',
-    400: '#94a3b8',
-    500: '#64748b',
-    600: '#475569',
-    700: '#334155',
-    800: '#1e293b',
-    900: '#0f172a',
+    50: '#faf8f5',
+    100: '#f5f2ed',
+    200: '#ebe6de',
+    300: '#d9d2c7',
+    400: '#a89f91',
+    500: '#7a7265',
+    600: '#5c5549',
+    700: '#403b32',
+    800: '#2a2620',
+    900: '#1a1714',
   },
 
   // Semantic colors
   success: {
-    main: '#10b981',
-    light: '#d1fae5',
-    dark: '#059669',
+    main: '#22c55e',
+    light: '#dcfce7',
+    dark: '#16a34a',
   },
   warning: {
-    main: '#f59e0b',
+    main: '#f5a623',
     light: '#fef3c7',
-    dark: '#d97706',
+    dark: '#d4860c',
   },
   error: {
     main: '#ef4444',
@@ -55,35 +63,35 @@ export const palette = {
 } as const;
 
 export const colors = {
-  // Backgrounds
+  // Backgrounds (warm cream tones)
   background: {
-    primary: '#f5f7f8',
+    primary: '#f7f5f2', // Warm cream
     secondary: '#ffffff',
-    tertiary: '#f1f5f9',
+    tertiary: '#f0ebe4',
   },
 
   // Surfaces (cards, modals, etc.)
   surface: {
     primary: '#ffffff',
-    secondary: '#f8fafc',
+    secondary: '#faf8f5',
     elevated: '#ffffff',
   },
 
   // Text
   text: {
-    primary: '#0d171c',
-    secondary: '#475569',
-    tertiary: '#94a3b8',
+    primary: '#1a1714',
+    secondary: '#5c5549',
+    tertiary: '#a89f91',
     inverse: '#ffffff',
-    disabled: '#cbd5e1',
+    disabled: '#d9d2c7',
   },
 
   // Borders
   border: {
-    primary: '#e2e8f0',
-    secondary: '#f1f5f9',
-    subtle: '#f1f5f9',
-    focus: palette.primary.main,
+    primary: '#ebe6de',
+    secondary: '#f5f2ed',
+    subtle: '#f5f2ed',
+    focus: palette.accent.main,
     transparent: 'transparent',
   },
 
@@ -92,9 +100,17 @@ export const colors = {
     primary: palette.primary.main,
     primaryHover: palette.primary.light,
     primaryPressed: palette.primary.dark,
-    secondary: '#f1f5f9',
-    secondaryHover: '#e2e8f0',
-    disabled: '#e2e8f0',
+    secondary: '#f5f2ed',
+    secondaryHover: '#ebe6de',
+    disabled: '#ebe6de',
+  },
+
+  // Accent (for highlights, CTAs)
+  accent: {
+    main: palette.accent.main,
+    light: palette.accent.light,
+    dark: palette.accent.dark,
+    bg: '#fff8eb',
   },
 
   // Semantic
@@ -123,16 +139,16 @@ export const colors = {
 
   // Primary colors (for direct access)
   primary: {
-    50: '#fdf2f4',
-    100: '#fce4e9',
+    50: '#f5f2ed',
+    100: '#ebe6de',
     600: palette.primary.main,
     700: palette.primary.dark,
   },
 
   // Shadows (for iOS)
   shadow: {
-    color: '#000000',
-    opacity: 0.08,
+    color: '#1a1714',
+    opacity: 0.06,
   },
 } as const;
 

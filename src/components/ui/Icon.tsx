@@ -12,8 +12,8 @@ import type { StyleProp, ViewStyle } from 'react-native';
 type IconSizeName = 'small' | 'medium' | 'large' | 'xlarge';
 type IconSize = IconSizeName | number;
 
-// Map of our icon names to Feather icon names
-type FeatherIconName = React.ComponentProps<typeof Feather>['name'];
+// Feather icon names type
+type FeatherIconName = string;
 
 interface IconProps {
   name: string;

@@ -93,7 +93,8 @@ export function TransferErrorScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
 
   const config = useMemo(() => {
-    return ERROR_CONFIGS[errorType] ?? ERROR_CONFIGS.generic;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return ERROR_CONFIGS[errorType] ?? ERROR_CONFIGS.generic!;
   }, [errorType]);
 
   const handlePrimaryAction = () => {

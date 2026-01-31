@@ -123,7 +123,6 @@ export function BankSelectionScreen({ navigation }: Props) {
             leftIcon={
               <Icon name="search" size={20} color={colors.text.tertiary} />
             }
-            containerStyle={styles.searchInput}
           />
         </View>
 
@@ -178,7 +177,7 @@ export function BankSelectionScreen({ navigation }: Props) {
           </View>
         );
       }
-      return renderBankItem(item);
+      return renderBankItem(item as Bank);
     },
     [renderBankItem]
   );
@@ -272,10 +271,6 @@ const styles = StyleSheet.create({
   searchContainer: {
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[3],
-  },
-  searchInput: {
-    backgroundColor: colors.background.secondary,
-    borderRadius: borderRadius.xl,
   },
   section: {
     paddingHorizontal: spacing[4],

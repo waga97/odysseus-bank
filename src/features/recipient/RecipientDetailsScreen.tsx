@@ -155,25 +155,18 @@ export function RecipientDetailsScreen({ navigation, route }: Props) {
           </View>
 
           {/* Account Number Input */}
-          <View style={styles.inputSection}>
-            <Text variant="labelMedium" color="secondary" style={styles.label}>
-              Account Number
-            </Text>
-            <Input
-              ref={accountInputRef}
-              placeholder="e.g. 1234567890"
-              value={accountNumber}
-              onChangeText={handleAccountChange}
-              keyboardType="number-pad"
-              maxLength={16}
-              autoFocus
-              error={error ?? undefined}
-              containerStyle={styles.input}
-            />
-            <Text variant="caption" color="tertiary" style={styles.hint}>
-              Enter 8-16 digit account number
-            </Text>
-          </View>
+          <Input
+            ref={accountInputRef}
+            label="Account Number"
+            placeholder="e.g. 1234567890"
+            value={accountNumber}
+            onChangeText={handleAccountChange}
+            keyboardType="number-pad"
+            maxLength={16}
+            autoFocus
+            error={error ?? undefined}
+            hint="Enter 8-16 digit account number"
+          />
 
           {/* Info Card */}
           <View style={styles.infoCard}>
@@ -272,18 +265,6 @@ const styles = StyleSheet.create({
   bankInfo: {
     flex: 1,
     gap: 2,
-  },
-  inputSection: {
-    gap: spacing[2],
-  },
-  label: {
-    marginLeft: spacing[1],
-  },
-  input: {
-    backgroundColor: colors.background.secondary,
-  },
-  hint: {
-    marginLeft: spacing[1],
   },
   infoCard: {
     flexDirection: 'row',

@@ -1,6 +1,6 @@
 /**
  * Odysseus Bank - Biometric Authentication Screen
- * Face ID / Fingerprint / PIN fallback for transaction authorization
+ * Face ID / Fingerprint / PIN fallback for transaction authorization - warm theme
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
@@ -71,6 +71,7 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
       pulse.start();
       return () => pulse.stop();
     }
+    return undefined;
   }, [authState, pulseAnim]);
 
   const checkBiometricType = async () => {
@@ -118,13 +119,12 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
       const result = await LocalAuthentication.authenticateAsync({
         promptMessage: `Authorize transfer of RM ${amount.toFixed(2)}`,
         cancelLabel: 'Cancel',
-        disableDeviceFallback: false, // Allow device passcode as fallback
+        disableDeviceFallback: false,
         fallbackLabel: 'Use Passcode',
       });
 
       if (result.success) {
         setAuthState('success');
-        // Navigate to processing after short delay
         setTimeout(() => {
           navigation.replace('TransferProcessing', {
             transferId: `txn-${Date.now()}`,
@@ -135,7 +135,6 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
         }, 500);
       } else if (result.error === 'user_cancel') {
         setAuthState('cancelled');
-        // User cancelled - show option to retry or use app PIN
       } else {
         setAuthState('failed');
         triggerShake();
@@ -193,9 +192,7 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
         setPin(newPin);
 
         if (newPin.length === 6) {
-          // Simulate PIN verification
           setTimeout(() => {
-            // For demo, any 6-digit PIN works
             setAuthState('success');
             setTimeout(() => {
               navigation.replace('TransferProcessing', {
@@ -225,9 +222,9 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
 
   const getBiometricIcon = () => {
     if (biometricType === 'faceid') {
-      return 'eye'; // Using eye as Face ID substitute
+      return 'eye';
     }
-    return 'shield'; // Using shield as fingerprint substitute
+    return 'shield';
   };
 
   const getBiometricLabel = () => {
@@ -252,7 +249,6 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
     }
   };
 
-  // Format amount for display
   const formattedAmount = `RM ${amount.toFixed(2)}`;
 
   // PIN Input UI
@@ -264,24 +260,18 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
         {/* Header */}
         <View style={styles.header}>
           <Pressable style={styles.backButton} onPress={handleBack}>
-            <Icon name="arrow-left" size={24} color={colors.text.primary} />
+            <Icon name="arrow-left" size={22} color={colors.text.primary} />
           </Pressable>
-          <Text variant="titleMedium" color="primary">
-            Enter PIN
-          </Text>
+          <Text style={styles.headerTitle}>Enter PIN</Text>
           <View style={styles.headerSpacer} />
         </View>
 
         <View style={styles.pinContent}>
           {/* Amount Display */}
           <View style={styles.amountContainer}>
-            <Text variant="bodySmall" color="tertiary">
-              Authorize transfer of
-            </Text>
+            <Text style={styles.labelText}>Authorize transfer of</Text>
             <Text style={styles.pinAmountText}>{formattedAmount}</Text>
-            <Text variant="bodySmall" color="tertiary">
-              to {recipient.name}
-            </Text>
+            <Text style={styles.labelText}>to {recipient.name}</Text>
           </View>
 
           {/* PIN Dots */}
@@ -306,9 +296,9 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
               <Icon
                 name={getBiometricIcon()}
                 size={20}
-                color={palette.primary.main}
+                color={palette.accent.main}
               />
-              <Text variant="labelMedium" color={palette.primary.main}>
+              <Text style={styles.biometricButtonText}>
                 Use {getBiometricLabel()} instead
               </Text>
             </Pressable>
@@ -374,24 +364,18 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
       {/* Header */}
       <View style={styles.header}>
         <Pressable style={styles.backButton} onPress={handleBack}>
-          <Icon name="arrow-left" size={24} color={colors.text.primary} />
+          <Icon name="arrow-left" size={22} color={colors.text.primary} />
         </Pressable>
-        <Text variant="titleMedium" color="primary">
-          Authorize Transfer
-        </Text>
+        <Text style={styles.headerTitle}>Authorize Transfer</Text>
         <View style={styles.headerSpacer} />
       </View>
 
       <View style={styles.content}>
         {/* Amount Display */}
         <View style={styles.amountContainer}>
-          <Text variant="bodySmall" color="tertiary">
-            You&apos;re sending
-          </Text>
+          <Text style={styles.labelText}>You are sending</Text>
           <Text style={styles.amountText}>{formattedAmount}</Text>
-          <Text variant="bodySmall" color="tertiary">
-            to {recipient.name}
-          </Text>
+          <Text style={styles.labelText}>to {recipient.name}</Text>
         </View>
 
         {/* Biometric Icon */}
@@ -410,19 +394,20 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
             size={48}
             color={
               authState === 'success'
-                ? colors.status.success
+                ? palette.success.main
                 : authState === 'failed'
-                  ? colors.status.error
-                  : palette.primary.main
+                  ? palette.error.main
+                  : palette.accent.main
             }
           />
         </Animated.View>
 
         {/* Status Message */}
         <Text
-          variant="bodyMedium"
-          color={authState === 'failed' ? colors.status.error : 'secondary'}
-          align="center"
+          style={[
+            styles.statusText,
+            authState === 'failed' && styles.statusTextError,
+          ]}
         >
           {getStatusMessage()}
         </Text>
@@ -444,9 +429,7 @@ export function BiometricAuthScreen({ navigation, route }: Props) {
           style={styles.usePinButton}
           onPress={() => setShowPinFallback(true)}
         >
-          <Text variant="labelMedium" color={palette.primary.main}>
-            Use PIN instead
-          </Text>
+          <Text style={styles.usePinText}>Use PIN instead</Text>
         </Pressable>
       </View>
 
@@ -479,6 +462,14 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.full,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: colors.surface.secondary,
+  },
+  headerTitle: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text.primary,
+    textAlign: 'center',
   },
   headerSpacer: {
     width: 40,
@@ -494,6 +485,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing[1],
   },
+  labelText: {
+    fontSize: 14,
+    color: colors.text.tertiary,
+  },
   amountText: {
     fontSize: 40,
     fontWeight: '700',
@@ -505,19 +500,27 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.primary[50],
+    backgroundColor: colors.accent.bg,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 3,
-    borderColor: palette.primary.main,
+    borderColor: palette.accent.main,
   },
   biometricIconSuccess: {
-    backgroundColor: colors.status.successBg,
-    borderColor: colors.status.success,
+    backgroundColor: palette.success.light,
+    borderColor: palette.success.main,
   },
   biometricIconFailed: {
-    backgroundColor: colors.status.errorBg,
-    borderColor: colors.status.error,
+    backgroundColor: palette.error.light,
+    borderColor: palette.error.main,
+  },
+  statusText: {
+    fontSize: 15,
+    color: colors.text.secondary,
+    textAlign: 'center',
+  },
+  statusTextError: {
+    color: palette.error.main,
   },
   retryButton: {
     marginTop: spacing[2],
@@ -525,6 +528,11 @@ const styles = StyleSheet.create({
   usePinButton: {
     paddingVertical: spacing[3],
     paddingHorizontal: spacing[4],
+  },
+  usePinText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: palette.accent.main,
   },
   bottomContainer: {
     paddingHorizontal: spacing[4],
@@ -559,8 +567,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background.primary,
   },
   pinDotFilled: {
-    backgroundColor: palette.primary.main,
-    borderColor: palette.primary.main,
+    backgroundColor: palette.accent.main,
+    borderColor: palette.accent.main,
   },
   useBiometricButton: {
     flexDirection: 'row',
@@ -568,6 +576,11 @@ const styles = StyleSheet.create({
     gap: spacing[2],
     paddingVertical: spacing[3],
     marginBottom: spacing[4],
+  },
+  biometricButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: palette.accent.main,
   },
   pinKeypad: {
     marginTop: 'auto',
@@ -586,10 +599,10 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.full,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.surface.secondary,
   },
   pinKeyPressed: {
-    backgroundColor: colors.interactive.secondary,
+    backgroundColor: colors.background.tertiary,
   },
   pinKeyText: {
     fontSize: 28,

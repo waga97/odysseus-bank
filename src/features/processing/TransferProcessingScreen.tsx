@@ -55,19 +55,20 @@ export function TransferProcessingScreen({ navigation, route }: Props) {
     let timeout: ReturnType<typeof setTimeout>;
 
     const processStep = (stepIndex: number) => {
-      if (stepIndex < PROCESSING_STEPS.length) {
+      const step = PROCESSING_STEPS[stepIndex];
+      if (stepIndex < PROCESSING_STEPS.length && step) {
         setCurrentStep(stepIndex);
 
         // Animate progress bar
         Animated.timing(progressValue, {
           toValue: (stepIndex + 1) / PROCESSING_STEPS.length,
-          duration: PROCESSING_STEPS[stepIndex].duration,
+          duration: step.duration,
           useNativeDriver: false,
         }).start();
 
         timeout = setTimeout(() => {
           processStep(stepIndex + 1);
-        }, PROCESSING_STEPS[stepIndex].duration);
+        }, step.duration);
       } else {
         // Complete
         setIsComplete(true);

@@ -16,8 +16,10 @@ export interface User {
 
 export interface Account {
   id: string;
+  name: string;
   accountNumber: string;
-  accountType: 'savings' | 'checking' | 'current';
+  type: 'savings' | 'current' | 'investment';
+  accountType?: 'savings' | 'checking' | 'current'; // deprecated, use 'type'
   balance: number;
   currency: string;
   isDefault: boolean;
@@ -63,7 +65,11 @@ export interface Bank {
 /**
  * Transaction Types
  */
-export type TransactionStatus = 'pending' | 'processing' | 'completed' | 'failed';
+export type TransactionStatus =
+  | 'pending'
+  | 'processing'
+  | 'completed'
+  | 'failed';
 export type TransactionType = 'transfer' | 'payment' | 'topup' | 'withdrawal';
 
 export interface Transaction {

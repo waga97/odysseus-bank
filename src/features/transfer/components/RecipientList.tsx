@@ -1,6 +1,6 @@
 /**
  * Odysseus Bank - Recipient List
- * List of recent/favorite recipients
+ * List of recent/favorite recipients - warm theme
  */
 
 import React, { useCallback, useMemo } from 'react';
@@ -11,8 +11,8 @@ import {
   FlatList,
   type ListRenderItem,
 } from 'react-native';
-import { Text, Avatar } from '@components/ui';
-import { colors } from '@theme/colors';
+import { Text, Avatar, Icon } from '@components/ui';
+import { colors, palette } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { borderRadius } from '@theme/borderRadius';
 import type { Recipient } from '@types';
@@ -29,7 +29,7 @@ function maskAccountNumber(accountNumber: string): string {
   if (accountNumber.length <= 4) {
     return accountNumber;
   }
-  return `•••• ${accountNumber.slice(-4)}`;
+  return `**** ${accountNumber.slice(-4)}`;
 }
 
 export function RecipientList({
@@ -63,24 +63,18 @@ export function RecipientList({
         ]}
         onPress={() => onRecipientPress(item)}
       >
-        <Avatar
-          name={item.name}
-          source={item.avatar ? { uri: item.avatar } : null}
-          size="large"
-        />
+        <Avatar name={item.name} size="large" />
 
         <View style={styles.recipientInfo}>
-          <Text variant="titleSmall" color="primary">
-            {item.name}
-          </Text>
-          <Text variant="caption" color="tertiary">
+          <Text style={styles.recipientName}>{item.name}</Text>
+          <Text style={styles.recipientDetail}>
             {item.accountNumber
               ? maskAccountNumber(item.accountNumber)
               : item.phoneNumber}
           </Text>
         </View>
 
-        <Text style={styles.chevron}>›</Text>
+        <Icon name="chevron-right" size={20} color={colors.text.tertiary} />
       </Pressable>
     ),
     [onRecipientPress]
@@ -91,14 +85,10 @@ export function RecipientList({
   const ListHeader = useMemo(
     () => (
       <View style={styles.header}>
-        <Text variant="titleSmall" color="primary">
-          {title}
-        </Text>
+        <Text style={styles.headerTitle}>{title}</Text>
         {onViewAllPress && (
           <Pressable onPress={onViewAllPress}>
-            <Text variant="labelSmall" color={colors.interactive.primary}>
-              View all
-            </Text>
+            <Text style={styles.viewAllText}>View all</Text>
           </Pressable>
         )}
       </View>
@@ -109,7 +99,8 @@ export function RecipientList({
   const ListEmpty = useMemo(
     () => (
       <View style={styles.emptyContainer}>
-        <Text variant="bodyMedium" color="tertiary" align="center">
+        <Icon name="users" size={40} color={colors.text.tertiary} />
+        <Text style={styles.emptyText}>
           {searchQuery ? 'No recipients found' : 'No recent recipients'}
         </Text>
       </View>
@@ -136,8 +127,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: spacing[5],
-    paddingTop: spacing[6],
-    paddingBottom: spacing[2],
+    paddingTop: spacing[5],
+    paddingBottom: spacing[3],
+  },
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text.primary,
+  },
+  viewAllText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: palette.accent.main,
   },
   listContent: {
     paddingBottom: spacing[32],
@@ -145,25 +146,40 @@ const styles = StyleSheet.create({
   recipientItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing[4],
+    gap: spacing[3],
     paddingVertical: spacing[3],
-    paddingHorizontal: spacing[3],
-    marginHorizontal: spacing[3],
-    borderRadius: borderRadius.xl,
+    paddingHorizontal: spacing[4],
+    marginHorizontal: spacing[4],
+    marginBottom: spacing[2],
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.surface.primary,
+    borderWidth: 1,
+    borderColor: colors.border.secondary,
   },
   recipientItemPressed: {
     backgroundColor: colors.background.tertiary,
   },
   recipientInfo: {
     flex: 1,
+    gap: 2,
   },
-  chevron: {
-    fontSize: 24,
+  recipientName: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.text.primary,
+  },
+  recipientDetail: {
+    fontSize: 13,
     color: colors.text.tertiary,
   },
   emptyContainer: {
     padding: spacing[8],
     alignItems: 'center',
+    gap: spacing[3],
+  },
+  emptyText: {
+    fontSize: 14,
+    color: colors.text.tertiary,
   },
 });
 

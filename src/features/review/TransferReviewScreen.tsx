@@ -13,10 +13,9 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text, Avatar, Icon, Button, Divider } from '@components/ui';
-import { colors } from '@theme/colors';
+import { colors, palette } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { borderRadius } from '@theme/borderRadius';
-import { shadows } from '@theme/shadows';
 import type { RootStackScreenProps } from '@navigation/types';
 import { useAccountStore } from '@stores/accountStore';
 
@@ -139,7 +138,7 @@ export function TransferReviewScreen({ navigation, route }: Props) {
           </Text>
           <View style={styles.accountRow}>
             <View style={styles.accountIcon}>
-              <Icon name="credit-card" size={20} color={colors.primary[600]} />
+              <Icon name="credit-card" size={20} color={palette.accent.main} />
             </View>
             <View style={styles.accountInfo}>
               <Text variant="titleSmall" color="primary">
@@ -229,14 +228,13 @@ export function TransferReviewScreen({ navigation, route }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.background.primary,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[3],
-    backgroundColor: colors.background.primary,
   },
   backButton: {
     width: 40,
@@ -265,10 +263,9 @@ const styles = StyleSheet.create({
   amountCard: {
     alignItems: 'center',
     padding: spacing[6],
-    backgroundColor: colors.background.primary,
+    backgroundColor: palette.primary.contrast,
     borderRadius: borderRadius['2xl'],
     gap: spacing[2],
-    ...shadows.sm,
   },
   amountText: {
     fontSize: 36,
@@ -284,9 +281,8 @@ const styles = StyleSheet.create({
   },
   detailsCard: {
     padding: spacing[4],
-    backgroundColor: colors.background.primary,
+    backgroundColor: palette.primary.contrast,
     borderRadius: borderRadius.xl,
-    ...shadows.sm,
   },
   sectionLabel: {
     marginBottom: spacing[3],
@@ -310,7 +306,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: borderRadius.lg,
-    backgroundColor: colors.primary[50],
+    backgroundColor: palette.primary.main,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -342,9 +338,6 @@ const styles = StyleSheet.create({
   bottomContainer: {
     paddingHorizontal: spacing[4],
     paddingTop: spacing[3],
-    backgroundColor: colors.background.primary,
-    borderTopWidth: 1,
-    borderTopColor: colors.border.subtle,
     gap: spacing[3],
   },
   disclaimer: {

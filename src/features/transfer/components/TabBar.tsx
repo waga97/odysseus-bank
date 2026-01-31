@@ -1,6 +1,6 @@
 /**
  * Odysseus Bank - Tab Bar
- * Horizontal tabs for transfer methods
+ * Horizontal tabs for transfer methods - warm theme
  */
 
 import React from 'react';
@@ -38,11 +38,7 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
               style={styles.tab}
               onPress={() => onTabChange(tab.id)}
             >
-              <Text
-                variant="labelMedium"
-                color={isActive ? palette.primary.main : colors.text.tertiary}
-                style={isActive && styles.activeTabText}
-              >
+              <Text style={[styles.tabText, isActive && styles.activeTabText]}>
                 {tab.label}
               </Text>
               {isActive && <View style={styles.activeIndicator} />}
@@ -56,6 +52,7 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: colors.background.primary,
     borderBottomWidth: 1,
     borderBottomColor: colors.border.secondary,
   },
@@ -68,8 +65,14 @@ const styles = StyleSheet.create({
     paddingBottom: spacing[3],
     position: 'relative',
   },
+  tabText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text.tertiary,
+  },
   activeTabText: {
-    fontWeight: '700',
+    fontWeight: '600',
+    color: palette.accent.main,
   },
   activeIndicator: {
     position: 'absolute',
@@ -77,7 +80,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 3,
-    backgroundColor: palette.primary.main,
+    backgroundColor: palette.accent.main,
     borderTopLeftRadius: 2,
     borderTopRightRadius: 2,
   },

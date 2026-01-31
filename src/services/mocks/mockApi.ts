@@ -97,7 +97,7 @@ export const mockApi = {
 
     const errors: { field: string; message: string }[] = [];
     const warnings: {
-      type: string;
+      type: 'daily_limit_warning' | 'duplicate_transfer';
       message: string;
       details?: Record<string, unknown>;
     }[] = [];
@@ -134,7 +134,7 @@ export const mockApi = {
       errors.length === 0
     ) {
       warnings.push({
-        type: 'daily_limit_warning',
+        type: 'daily_limit_warning' as const,
         message: `You're approaching your daily transfer limit.`,
       });
     }

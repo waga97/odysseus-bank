@@ -1,13 +1,14 @@
 /**
  * Odysseus Bank - Balance Card
- * Displays total balance with hide/show toggle
+ * Large balance display with hide/show toggle
  */
 
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { Text, Icon } from '@components/ui';
-import { colors } from '@theme/colors';
+import { colors, palette } from '@theme/colors';
 import { spacing } from '@theme/spacing';
+import { borderRadius } from '@theme/borderRadius';
 import { useBalance } from '@stores/accountStore';
 
 export function BalanceCard() {
@@ -35,10 +36,12 @@ export function BalanceCard() {
     <View style={styles.container}>
       {/* Label with visibility toggle */}
       <View style={styles.labelRow}>
-        <Text variant="labelMedium" color="tertiary">
-          Total Balance
-        </Text>
-        <Pressable onPress={toggleVisibility} hitSlop={8}>
+        <Text style={styles.labelText}>Available Balance</Text>
+        <Pressable
+          style={styles.visibilityButton}
+          onPress={toggleVisibility}
+          hitSlop={12}
+        >
           <Icon
             name={isHidden ? 'eye-off' : 'eye'}
             size={18}
@@ -49,22 +52,17 @@ export function BalanceCard() {
 
       {/* Balance Amount */}
       <View style={styles.balanceRow}>
-        <Text variant="displayMedium" color="primary">
-          {isHidden ? '••••••' : `RM ${whole}`}
-        </Text>
-        {!isHidden && (
-          <Text variant="headlineMedium" color="tertiary">
-            .{decimal}
-          </Text>
-        )}
+        <Text style={styles.currencyText}>RM</Text>
+        <Text style={styles.balanceText}>{isHidden ? '****' : whole}</Text>
+        {!isHidden && <Text style={styles.decimalText}>.{decimal}</Text>}
       </View>
 
-      {/* Trend Indicator */}
-      <View style={styles.trendContainer}>
-        <Icon name="trending-up" size={14} color={colors.semantic.success} />
-        <Text variant="labelSmall" color={colors.semantic.success}>
-          +2.4% this month
-        </Text>
+      {/* Monthly Insight */}
+      <View style={styles.insightContainer}>
+        <View style={styles.insightBadge}>
+          <Icon name="trending-up" size={14} color={palette.accent.main} />
+          <Text style={styles.insightText}>+RM 2,450.00 this month</Text>
+        </View>
       </View>
     </View>
   );
@@ -72,28 +70,64 @@ export function BalanceCard() {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    paddingVertical: spacing[6],
+    paddingHorizontal: spacing[5],
+    paddingTop: spacing[6],
+    paddingBottom: spacing[4],
   },
   labelRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[2],
-    marginBottom: spacing[1],
+    marginBottom: spacing[2],
+  },
+  labelText: {
+    fontSize: 14,
+    color: colors.text.tertiary,
+    fontWeight: '500',
+  },
+  visibilityButton: {
+    padding: spacing[1],
   },
   balanceRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
   },
-  trendContainer: {
+  currencyText: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: colors.text.primary,
+    marginRight: spacing[2],
+    lineHeight: 32,
+  },
+  balanceText: {
+    fontSize: 48,
+    fontWeight: '700',
+    color: colors.text.primary,
+    lineHeight: 56,
+  },
+  decimalText: {
+    fontSize: 24,
+    fontWeight: '500',
+    color: colors.text.tertiary,
+    lineHeight: 32,
+  },
+  insightContainer: {
+    marginTop: spacing[3],
+  },
+  insightBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[1],
-    marginTop: spacing[2],
-    backgroundColor: colors.semantic.successBackground,
+    backgroundColor: palette.primary.main,
     paddingHorizontal: spacing[3],
-    paddingVertical: spacing[1],
-    borderRadius: 100,
+    paddingVertical: spacing[2],
+    borderRadius: borderRadius.full,
+    alignSelf: 'flex-start',
+  },
+  insightText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: palette.accent.main,
   },
 });
 

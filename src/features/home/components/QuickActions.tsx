@@ -1,6 +1,6 @@
 /**
  * Odysseus Bank - Quick Actions
- * Grid of primary action buttons (Scan, Add, Receive, Transfer)
+ * Horizontal row of action buttons (similar to Sendfie design)
  */
 
 import React from 'react';
@@ -9,7 +9,6 @@ import { Text, Icon } from '@components/ui';
 import { colors, palette } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { borderRadius } from '@theme/borderRadius';
-import { componentShadows } from '@theme/shadows';
 
 interface QuickAction {
   id: string;
@@ -20,43 +19,43 @@ interface QuickAction {
 }
 
 interface QuickActionsProps {
-  onScanPress?: () => void;
-  onAddMoneyPress?: () => void;
-  onReceivePress?: () => void;
+  onDepositPress?: () => void;
+  onPayPress?: () => void;
   onTransferPress?: () => void;
+  onRequestPress?: () => void;
 }
 
 export function QuickActions({
-  onScanPress,
-  onAddMoneyPress,
-  onReceivePress,
+  onDepositPress,
+  onPayPress,
   onTransferPress,
+  onRequestPress,
 }: QuickActionsProps) {
   const actions: QuickAction[] = [
     {
-      id: 'scan',
-      label: 'Scan',
-      iconName: 'maximize',
-      onPress: onScanPress ?? (() => {}),
+      id: 'deposit',
+      label: 'Deposit',
+      iconName: 'arrow-down',
+      onPress: onDepositPress ?? (() => {}),
     },
     {
-      id: 'add',
-      label: 'Add Money',
-      iconName: 'plus',
-      isPrimary: true,
-      onPress: onAddMoneyPress ?? (() => {}),
-    },
-    {
-      id: 'receive',
-      label: 'Receive',
-      iconName: 'arrow-down-left',
-      onPress: onReceivePress ?? (() => {}),
+      id: 'pay',
+      label: 'Pay',
+      iconName: 'credit-card',
+      onPress: onPayPress ?? (() => {}),
     },
     {
       id: 'transfer',
       label: 'Transfer',
-      iconName: 'send',
+      iconName: 'arrow-up-right',
+      isPrimary: true,
       onPress: onTransferPress ?? (() => {}),
+    },
+    {
+      id: 'request',
+      label: 'Request',
+      iconName: 'arrow-down-left',
+      onPress: onRequestPress ?? (() => {}),
     },
   ];
 
@@ -68,26 +67,37 @@ export function QuickActions({
           style={styles.actionButton}
           onPress={action.onPress}
         >
-          <View
-            style={[
-              styles.iconContainer,
-              action.isPrimary && styles.iconContainerPrimary,
-              action.isPrimary && componentShadows.buttonPrimary,
-            ]}
-          >
-            <Icon
-              name={action.iconName}
-              size={24}
-              color={
-                action.isPrimary
-                  ? palette.primary.contrast
-                  : palette.primary.main
-              }
-            />
-          </View>
-          <Text variant="labelSmall" color="secondary">
-            {action.label}
-          </Text>
+          {({ pressed }) => (
+            <>
+              <View
+                style={[
+                  styles.iconContainer,
+                  action.isPrimary && styles.iconContainerPrimary,
+                  pressed && styles.iconContainerPressed,
+                ]}
+              >
+                <Icon
+                  name={action.iconName}
+                  size={22}
+                  color={
+                    pressed
+                      ? palette.accent.main
+                      : action.isPrimary
+                        ? palette.primary.contrast
+                        : palette.accent.main
+                  }
+                />
+              </View>
+              <Text
+                style={[
+                  styles.labelText,
+                  action.isPrimary && styles.labelTextPrimary,
+                ]}
+              >
+                {action.label}
+              </Text>
+            </>
+          )}
         </Pressable>
       ))}
     </View>
@@ -97,26 +107,43 @@ export function QuickActions({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    gap: spacing[2],
     paddingHorizontal: spacing[4],
+    marginTop: spacing[4],
   },
   actionButton: {
     alignItems: 'center',
-    gap: spacing[2],
+    gap: spacing[1],
+    paddingVertical: spacing[1],
+    paddingHorizontal: spacing[1],
   },
   iconContainer: {
     width: 64,
-    height: 64,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.surface.primary,
+    height: 48,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.accent.bg,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: colors.border.primary,
+    borderColor: palette.accent.light,
   },
   iconContainerPrimary: {
+    backgroundColor: palette.accent.main,
+    borderColor: palette.accent.main,
+  },
+  iconContainerPressed: {
     backgroundColor: palette.primary.main,
     borderColor: palette.primary.main,
+  },
+  labelText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: colors.text.secondary,
+  },
+  labelTextPrimary: {
+    color: colors.text.primary,
+    fontWeight: '600',
   },
 });
 

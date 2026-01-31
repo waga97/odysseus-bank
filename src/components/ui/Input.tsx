@@ -1,6 +1,11 @@
 /**
  * Odysseus Bank - Input Component
- * Text input with label, error state, and icons
+ *
+ * Styles:
+ * - Inactive: Orange border
+ * - Active/Focused: Black border
+ * - Background: Always white
+ * - Text color: Primary
  */
 
 import React, { useState, forwardRef } from 'react';
@@ -12,9 +17,9 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
-import { colors } from '@theme/colors';
+import { colors, palette } from '@theme/colors';
 import { typography } from '@theme/typography';
-import { componentRadius } from '@theme/borderRadius';
+import { borderRadius } from '@theme/borderRadius';
 import { spacing } from '@theme/spacing';
 import Text from './Text';
 
@@ -62,25 +67,8 @@ export const Input = forwardRef<TextInput, InputProps>(
       onBlur?.(e);
     };
 
-    const getBorderColor = () => {
-      if (error) {
-        return colors.semantic.error;
-      }
-      if (isFocused) {
-        return colors.border.focus;
-      }
-      return colors.border.primary;
-    };
-
-    const getBackgroundColor = () => {
-      if (disabled) {
-        return colors.background.tertiary;
-      }
-      return colors.surface.primary;
-    };
-
     return (
-      <View style={[styles.container, containerStyle]}>
+      <View style={[styles.wrapper, containerStyle]}>
         {label && (
           <Text variant="labelMedium" color="secondary" style={styles.label}>
             {label}
@@ -90,34 +78,27 @@ export const Input = forwardRef<TextInput, InputProps>(
         <View
           style={[
             styles.inputContainer,
-            {
-              borderColor: getBorderColor(),
-              backgroundColor: getBackgroundColor(),
-            },
             isFocused && styles.inputContainerFocused,
             error && styles.inputContainerError,
+            disabled && styles.inputContainerDisabled,
           ]}
         >
-          {leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
+          {leftIcon}
 
           <TextInput
             ref={ref}
-            style={[
-              styles.input,
-              leftIcon && styles.inputWithLeftIcon,
-              rightIcon && styles.inputWithRightIcon,
-              disabled && styles.inputDisabled,
-              inputStyle,
-            ]}
+            style={[styles.input, inputStyle]}
             placeholderTextColor={colors.text.tertiary}
             editable={!disabled}
             onFocus={handleFocus}
             onBlur={handleBlur}
+            autoCapitalize="none"
+            autoCorrect={false}
             keyboardAppearance="light"
             {...rest}
           />
 
-          {rightIcon && <View style={styles.rightIcon}>{rightIcon}</View>}
+          {rightIcon}
         </View>
 
         {(error || hint) && (
@@ -137,49 +118,47 @@ export const Input = forwardRef<TextInput, InputProps>(
 Input.displayName = 'Input';
 
 const styles = StyleSheet.create({
-  container: {
+  wrapper: {
     width: '100%',
   },
   label: {
-    marginBottom: spacing[1.5],
+    marginBottom: spacing[2],
+    marginLeft: spacing[1],
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderRadius: componentRadius.input,
-    minHeight: 52,
+    height: 48,
+    backgroundColor: palette.primary.contrast, // Always white
+    borderRadius: borderRadius.lg,
+    paddingHorizontal: spacing[4],
+    gap: spacing[3],
+    borderWidth: 2,
+    borderColor: palette.accent.main, // Orange border when inactive
   },
   inputContainerFocused: {
-    borderWidth: 2,
+    borderColor: palette.primary.main, // Black border when active
   },
   inputContainerError: {
-    borderWidth: 2,
+    borderColor: colors.semantic.error,
+  },
+  inputContainerDisabled: {
+    backgroundColor: colors.background.tertiary,
+    borderColor: colors.border.primary,
   },
   input: {
     flex: 1,
-    paddingHorizontal: spacing[4],
-    paddingVertical: spacing[3],
-    ...typography.bodyMedium,
+    fontSize: 15,
+    fontFamily: typography.bodyMedium.fontFamily,
+    fontWeight: typography.bodyMedium.fontWeight,
     color: colors.text.primary,
-  },
-  inputWithLeftIcon: {
-    paddingLeft: spacing[2],
-  },
-  inputWithRightIcon: {
-    paddingRight: spacing[2],
-  },
-  inputDisabled: {
-    color: colors.text.disabled,
-  },
-  leftIcon: {
-    paddingLeft: spacing[4],
-  },
-  rightIcon: {
-    paddingRight: spacing[4],
+    textAlignVertical: 'center',
+    paddingVertical: 0,
+    includeFontPadding: false,
   },
   helperText: {
     marginTop: spacing[1],
+    marginLeft: spacing[1],
   },
 });
 

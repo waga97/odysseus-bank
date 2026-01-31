@@ -19,7 +19,7 @@ import { componentShadows } from '@theme/shadows';
 import { spacing } from '@theme/spacing';
 import Text from './Text';
 
-type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
+type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'accent';
 type ButtonSize = 'small' | 'medium' | 'large';
 
 interface ButtonProps extends Omit<PressableProps, 'style'> {
@@ -91,6 +91,8 @@ export function Button({
           return pressed
             ? colors.interactive.secondaryHover
             : colors.interactive.secondary;
+        case 'accent':
+          return pressed ? palette.accent.dark : palette.accent.main;
         case 'outline':
         case 'ghost':
           return pressed ? colors.interactive.secondary : 'transparent';
@@ -109,6 +111,8 @@ export function Button({
     switch (variant) {
       case 'primary':
         return palette.primary.contrast;
+      case 'accent':
+        return '#ffffff';
       case 'secondary':
       case 'outline':
       case 'ghost':

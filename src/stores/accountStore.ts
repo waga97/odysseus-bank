@@ -194,6 +194,7 @@ export const useAccountStore = create<AccountState>((set, get) => ({
  */
 export const useDefaultAccount = () =>
   useAccountStore((state) => state.defaultAccount);
+export const useAccounts = () => useAccountStore((state) => state.accounts);
 export const useBalance = () =>
   useAccountStore((state) => state.defaultAccount?.balance ?? 0);
 export const useRecipients = () => useAccountStore((state) => state.recipients);

@@ -1,14 +1,15 @@
 /**
  * Odysseus Bank - Transfer Header
- * Header with back button and title
+ * Header with back button and title - warm theme
  */
 
 import React from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Text } from '@components/ui';
+import { Text, Icon } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
+import { borderRadius } from '@theme/borderRadius';
 
 interface TransferHeaderProps {
   title: string;
@@ -26,15 +27,20 @@ export function TransferHeader({
   return (
     <View style={[styles.container, { paddingTop: insets.top + spacing[2] }]}>
       {/* Back Button */}
-      <Pressable style={styles.backButton} onPress={onBackPress} hitSlop={8}>
-        <Text style={styles.backIcon}>←</Text>
+      <Pressable
+        style={({ pressed }) => [
+          styles.backButton,
+          pressed && styles.backButtonPressed,
+        ]}
+        onPress={onBackPress}
+        hitSlop={8}
+      >
+        <Icon name="arrow-left" size={22} color={colors.text.primary} />
       </Pressable>
 
       {/* Title */}
       <View style={styles.titleContainer}>
-        <Text variant="headlineSmall" color="primary">
-          {title}
-        </Text>
+        <Text style={styles.titleText}>{title}</Text>
       </View>
 
       {/* Right Element */}
@@ -49,22 +55,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing[4],
     paddingBottom: spacing[4],
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.background.primary,
   },
   backButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: borderRadius.full,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: colors.surface.secondary,
   },
-  backIcon: {
-    fontSize: 24,
-    color: colors.text.primary,
+  backButtonPressed: {
+    backgroundColor: colors.background.tertiary,
   },
   titleContainer: {
     flex: 1,
     alignItems: 'center',
+  },
+  titleText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text.primary,
   },
   rightContainer: {
     width: 40,

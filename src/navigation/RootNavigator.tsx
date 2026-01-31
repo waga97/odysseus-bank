@@ -19,6 +19,7 @@ import { BiometricAuthScreen } from '@features/biometric';
 import { TransferProcessingScreen } from '@features/processing';
 import { TransferSuccessScreen } from '@features/success';
 import { TransferErrorScreen } from '@features/error';
+import { ContactPickerScreen } from '@features/contacts';
 import { PlaceholderScreen } from './PlaceholderScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -47,7 +48,7 @@ export function RootNavigator() {
         name="RecipientDetails"
         component={RecipientDetailsScreen}
       />
-      <Stack.Screen name="ContactPicker" component={PlaceholderScreen} />
+      <Stack.Screen name="ContactPicker" component={ContactPickerScreen} />
       <Stack.Screen name="AmountEntry" component={AmountEntryScreen} />
       <Stack.Screen name="TransferReview" component={TransferReviewScreen} />
       <Stack.Screen

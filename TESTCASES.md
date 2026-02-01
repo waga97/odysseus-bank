@@ -151,18 +151,20 @@ Alternative: You can also change `transferLimits.daily.used` in `src/config/app.
 
 **How to Trigger:**
 
-- Turn on Airplane Mode before the transfer processes
+- The mock API has a configurable random failure rate (default 5%)
+- Run multiple transfers and eventually one will fail with network error
 
 **Steps:**
 
 1. Start a transfer (any recipient, any amount)
-2. Complete auth step
-3. Quickly enable Airplane Mode on your device
-4. Wait for processing to fail
+2. Complete the transfer flow
+3. Repeat if needed (5% chance per transfer)
 
 **Expected:** Error screen appears with title "Connection Error" and message about checking internet.
 
-Note: The app also has a 5% random network failure rate for testing, but airplane mode is more reliable.
+Note: The app includes automatic retry logic with exponential backoff (3 attempts), so transient failures may recover automatically. If all retries fail, the error screen appears.
+
+To test more reliably, change `mockApi.networkFailureRate` in `src/config/app.ts` to `1.0` for 100% failure rate.
 
 ---
 
@@ -222,7 +224,7 @@ Note: The app also has a 5% random network failure rate for testing, but airplan
 
 ### 8. Monthly Limit Exceeded
 
-**Error Name:** Blocked at UI level (doesn't reach API)
+**Error Name:** MONTHLY_LIMIT_EXCEEDED
 
 **How to Trigger:**
 
@@ -236,21 +238,26 @@ Note: The app also has a 5% random network failure rate for testing, but airplan
 
 **Expected:** Continue button is disabled. Error message shows amount exceeds monthly limit.
 
+Note: Monthly limit is also enforced at the API level, so even if UI validation is bypassed, the transfer will fail.
+
 ---
 
 ## Configuration Tips
 
 You can adjust these values in `src/config/app.ts` to make testing easier:
 
-| Setting                         | Default  | What it affects                     |
-| ------------------------------- | -------- | ----------------------------------- |
-| `pinCode`                       | 123456   | PIN for auth fallback               |
-| `mockBalances.current`          | 73566.75 | Account balance shown               |
-| `transferLimits.daily.used`     | 2000     | How much of daily limit is "used"   |
-| `transferLimits.monthly.used`   | 15000    | How much of monthly limit is "used" |
-| `transferLimits.perTransaction` | 6000     | Max single transfer amount          |
-| `loadingDelay`                  | 800      | API response delay in ms            |
-| `features.enableBiometrics`     | true     | Default state of Face ID toggle     |
+| Setting                            | Default  | What it affects                     |
+| ---------------------------------- | -------- | ----------------------------------- |
+| `pinCode`                          | 123456   | PIN for auth fallback               |
+| `mockBalances.current`             | 73566.75 | Account balance shown               |
+| `transferLimits.daily.used`        | 2000     | How much of daily limit is "used"   |
+| `transferLimits.monthly.used`      | 15000    | How much of monthly limit is "used" |
+| `transferLimits.perTransaction`    | 6000     | Max single transfer amount          |
+| `loadingDelay`                     | 800      | API response delay in ms            |
+| `features.enableBiometrics`        | true     | Default state of Face ID toggle     |
+| `mockApi.networkFailureRate`       | 0.05     | Network error probability (0-1)     |
+| `mockApi.transferDelay`            | 1500     | Transfer processing delay in ms     |
+| `validation.limitWarningThreshold` | 0.8      | Warn at this % of limit (0-1)       |
 
 Changes to config take effect on app reload - no rebuild needed.
 

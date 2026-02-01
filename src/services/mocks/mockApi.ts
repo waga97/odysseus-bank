@@ -129,7 +129,7 @@ export const mockApi = {
   async executeTransfer(
     request: TransferRequest & { recipientName?: string; bankName?: string }
   ): Promise<Transaction> {
-    await delay(1500); // Longer delay for transfer
+    await delay(appConfig.mockApi.transferDelay);
 
     // Test account number for invalid account error
     // 111122223333 = invalid account (can't trigger naturally)
@@ -141,8 +141,8 @@ export const mockApi = {
       throw new Error('INVALID_ACCOUNT');
     }
 
-    // Simulate random network failure (5% chance)
-    if (Math.random() < 0.05) {
+    // Simulate random network failure based on config
+    if (Math.random() < appConfig.mockApi.networkFailureRate) {
       throw new Error('NETWORK_ERROR');
     }
 
@@ -154,6 +154,11 @@ export const mockApi = {
     // Check daily limit
     if (request.amount > mockTransferLimits.daily.limit - dailyUsed) {
       throw new Error('DAILY_LIMIT_EXCEEDED');
+    }
+
+    // Check monthly limit
+    if (request.amount > mockTransferLimits.monthly.limit - monthlyUsed) {
+      throw new Error('MONTHLY_LIMIT_EXCEEDED');
     }
 
     // Execute transfer

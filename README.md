@@ -11,7 +11,7 @@ This module handles the complete P2P money transfer flow, including recipient se
 - **React Native 0.81** + **Expo 54** (managed workflow with dev client)
 - **TypeScript** with strict mode enabled
 - **React Navigation 6** - native stack for performant transitions
-- **Zustand** - lightweight state management
+- **Zustand** - lightweight state management with shallow selectors
 - **expo-local-authentication** - Face ID / Touch ID / Fingerprint
 - **expo-contacts** - DuitNow contact-based transfers
 - **Jest** + React Native Testing Library for unit tests
@@ -71,7 +71,7 @@ Note: Biometric auth will fail in Expo Go. The app will automatically fall back 
 
 ```
 src/
-├── components/ui/       # Reusable UI components (Button, Text, Avatar, etc.)
+├── components/ui/       # Reusable UI components (Button, Input, Avatar, etc.)
 ├── features/            # Feature-based screen modules
 │   ├── home/            # Dashboard with balance, quick actions
 │   ├── transfer/        # Transfer hub (recipient selection)
@@ -81,21 +81,21 @@ src/
 │   ├── amount/          # Amount entry with limit validation
 │   ├── review/          # Transfer confirmation
 │   ├── biometric/       # Auth screen (biometric + PIN fallback)
-│   ├── processing/      # Transaction processing animation
+│   ├── processing/      # Transaction processing with retry logic
 │   ├── success/         # Success screen with receipt sharing
-│   ├── error/           # Error handling and retry
-│   ├── history/         # Transaction history list
+│   ├── error/           # Error handling with user-friendly messages
+│   ├── history/         # Paginated transaction history
 │   └── settings/        # App settings and limits display
 ├── navigation/          # React Navigation config
 ├── stores/              # Zustand stores (auth, account, transfer)
 ├── services/
 │   ├── api/             # API client setup (ready for real backend)
-│   └── mocks/           # Mock API with realistic delays
-├── hooks/               # Custom React hooks
-├── utils/               # Helper functions (currency, validation, etc.)
+│   └── mocks/           # Mock API with configurable delays and failures
+├── hooks/               # Custom React hooks (network status, animations)
+├── utils/               # Helper functions (currency, validation, retry)
 ├── theme/               # Design tokens (colors, typography, spacing)
 ├── types/               # TypeScript interfaces and types
-└── config/              # App configuration and feature flags
+└── config/              # Centralized app configuration
 ```
 
 ## Architecture Decisions
@@ -104,9 +104,13 @@ src/
 
 Each feature is self-contained with its own screen components. Shared UI lives in `components/ui/`. This keeps features isolated and makes it easy to find related code.
 
+### Single Source of Truth for Configuration
+
+All configurable values live in `src/config/app.ts`. This includes mock data, transfer limits, API delays, validation thresholds, and feature flags. The mock API and validation logic pull from this config, ensuring consistency across the app.
+
 ### Mock-First Development
 
-The app runs entirely on mock data via `services/mocks/`. The mock API simulates network delays and can return different account states for testing. To swap to a real backend, just update the imports in the stores.
+The app runs entirely on mock data via `services/mocks/`. The mock API simulates network delays, random failures, and can return different account states for testing. To swap to a real backend, update the imports in the API endpoints.
 
 ### Transfer Validation
 
@@ -116,8 +120,16 @@ Validation checks:
 
 - Sufficient balance (hard block)
 - Per-transaction limit (hard block)
-- Daily limit remaining (hard block, with 80% warning)
-- Monthly limit remaining (hard block, with 80% warning)
+- Daily limit remaining (hard block, with configurable warning threshold)
+- Monthly limit remaining (hard block, with configurable warning threshold)
+
+### Error Handling
+
+Errors are mapped to user-friendly messages in the error screen. The app includes:
+
+- Automatic retry with exponential backoff for transient network failures
+- Specific error screens for each error type (insufficient funds, daily/monthly limits, network error, invalid account)
+- Offline detection with banner notification
 
 ### Biometric Auth Flow
 
@@ -127,6 +139,7 @@ The BiometricAuthScreen handles multiple auth scenarios:
 2. Fallback to 6-digit PIN after biometric failure
 3. Retry mechanisms with attempt counting
 4. Device biometric not available gracefully falls back to PIN
+5. Biometric toggle in Settings to enable/disable
 
 The PIN is configurable in `src/config/app.ts` (default: `123456`).
 
@@ -134,11 +147,32 @@ The PIN is configurable in `src/config/app.ts` (default: `123456`).
 
 Using Zustand for its simplicity. Three stores:
 
-- `authStore` - biometric enrollment status
-- `accountStore` - balance, accounts, transfer limits
+- `authStore` - user auth state, biometric preferences
+- `accountStore` - accounts, recipients, transactions, transfer limits
 - `transferStore` - current transfer in progress
 
-Stores are intentionally simple - no complex selectors or middleware.
+Optimized with:
+
+- Computed selectors for derived state (recent recipients, favorites)
+- Shallow equality comparisons to prevent unnecessary re-renders
+- Memoized action selectors
+
+### Performance Optimizations
+
+- `React.memo` on frequently rendered components (Button)
+- `useMemo` for filtered/computed arrays
+- Paginated transaction history (5 per page)
+- FlatList with proper virtualization settings
+- Skeleton loading states instead of spinners
+
+### Accessibility
+
+Interactive components include:
+
+- `accessibilityRole` for semantic meaning
+- `accessibilityLabel` for screen readers
+- `accessibilityState` for disabled/loading states
+- `accessibilityHint` for additional context
 
 ### Design Token System
 
@@ -166,12 +200,22 @@ npm run test:coverage
 
 Tests cover:
 
-- Transfer validation logic
+- Transfer validation logic (25+ test cases)
 - Currency formatting
-- Mock API behavior
-- Store state management
+- Mock API behavior (limits, transactions, error scenarios)
+- Store state management (auth, accounts)
+- Retry utility with exponential backoff
 
-For manual testing flows (happy paths, error scenarios, and how to trigger each error type), see [TESTCASES.md](./TESTCASES.md).
+### Manual Testing
+
+For manual testing flows including happy paths, error scenarios, and how to trigger each error type, see **[TESTCASES.md](./TESTCASES.md)**.
+
+The test cases document includes:
+
+- Step-by-step flows for all transfer scenarios
+- How to trigger each error type (insufficient funds, limits, network errors)
+- Test account numbers for specific behaviors
+- Configuration tips for testing different states
 
 ## Linting & Formatting
 
@@ -193,17 +237,33 @@ Pre-commit hooks run lint and prettier automatically via husky + lint-staged.
 
 ## Configuration
 
-App settings are in `src/config/app.ts`:
+All app settings are centralized in `src/config/app.ts`:
 
 ```typescript
 {
-  loadingDelay: 800,        // Simulated API delay (ms)
-  pinCode: '123456',        // Fallback PIN
+  loadingDelay: 800,                    // Simulated API delay (ms)
+  pinCode: '123456',                    // Fallback PIN for auth
+
+  mockBalances: {
+    current: 73566.75,                  // Default account balance
+    savings: 10000.0,
+  },
+
   transferLimits: {
     daily: { limit: 10000, used: 2000 },
     monthly: { limit: 20000, used: 15000 },
     perTransaction: 6000,
   },
+
+  mockApi: {
+    networkFailureRate: 0.05,           // 5% chance of network error
+    transferDelay: 1500,                // Transfer processing time (ms)
+  },
+
+  validation: {
+    limitWarningThreshold: 0.8,         // Warn at 80% of limit
+  },
+
   features: {
     enableHaptics: true,
     enableBiometrics: true,
@@ -216,20 +276,23 @@ Changing these values affects the whole app - no rebuild needed for config tweak
 
 ## Simulating Different Scenarios
 
-**Low balance:** Change `mockBalances.current` in config
+| Scenario          | How to Trigger                                             |
+| ----------------- | ---------------------------------------------------------- |
+| Low balance       | Change `mockBalances.current` in config                    |
+| Near daily limit  | Set `transferLimits.daily.used` close to `limit`           |
+| Biometric failure | Use simulator with no Face ID enrolled, or deny permission |
+| Network error     | Set `mockApi.networkFailureRate` to `1.0` for 100% failure |
+| Invalid account   | Use account number `111122223333`                          |
+| Offline mode      | Toggle airplane mode - the app shows an offline banner     |
 
-**Near daily limit:** Set `transferLimits.daily.used` close to `limit`
-
-**Biometric failure:** Use simulator with no Face ID enrolled, or deny permission
-
-**Offline mode:** Toggle airplane mode - the app shows an offline banner
+See [TESTCASES.md](./TESTCASES.md) for complete testing guide.
 
 ## Known Limitations
 
 - TransactionDetails screen is a placeholder (not implemented yet)
 - No real API integration - mock only
 - No push notifications
-- Receipt sharing uses native share sheet, no custom templates
+- Receipt sharing uses native share sheet
 - Tests exclude type-checking (tsconfig excludes test dirs)
 
 ## Troubleshooting

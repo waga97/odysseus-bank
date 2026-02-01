@@ -60,6 +60,36 @@ export const appConfig = {
   },
 
   /**
+   * Mock API settings for testing
+   */
+  mockApi: {
+    /**
+     * Simulated network failure rate (0.0 to 1.0)
+     * Set to 0 for no failures, 1.0 for 100% failure rate
+     * Default: 0.05 (5% chance of network error)
+     */
+    networkFailureRate: 0.1,
+
+    /**
+     * Simulated transfer execution delay in milliseconds
+     * Longer than normal API delay to simulate bank processing
+     */
+    transferDelay: 1500,
+  },
+
+  /**
+   * Validation settings
+   */
+  validation: {
+    /**
+     * Warning threshold for approaching limits (0.0 to 1.0)
+     * Shows warning when usage reaches this percentage of limit
+     * Default: 0.8 (80%)
+     */
+    limitWarningThreshold: 0.8,
+  },
+
+  /**
    * Feature flags
    */
   features: {

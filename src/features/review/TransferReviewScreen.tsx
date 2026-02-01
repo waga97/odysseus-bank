@@ -135,9 +135,7 @@ export function TransferReviewScreen({ navigation, route }: Props) {
                 Odysseus Bank
               </Text>
               <Text variant="caption" color="tertiary">
-                {defaultAccount?.accountType === 'savings'
-                  ? 'Savings'
-                  : 'Current'}{' '}
+                {defaultAccount?.type === 'savings' ? 'Savings' : 'Current'}{' '}
                 Account ••••{' '}
                 {defaultAccount?.accountNumber?.slice(-4) ?? '0000'}
               </Text>

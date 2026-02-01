@@ -33,6 +33,7 @@ interface ButtonProps extends Omit<PressableProps, 'style'> {
   rightIcon?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   children: React.ReactNode;
+  accessibilityLabel?: string;
 }
 
 const sizeStyles = {
@@ -62,7 +63,7 @@ const textVariants = {
   large: 'buttonLarge',
 } as const;
 
-export function Button({
+function ButtonComponent({
   variant = 'primary',
   size = 'medium',
   fullWidth = false,
@@ -73,6 +74,7 @@ export function Button({
   style,
   children,
   onPress,
+  accessibilityLabel,
   ...rest
 }: ButtonProps) {
   const isDisabled = disabled || loading;
@@ -150,10 +152,17 @@ export function Button({
     [onPress]
   );
 
+  // Get accessible label from children if not provided
+  const label =
+    accessibilityLabel ?? (typeof children === 'string' ? children : undefined);
+
   return (
     <Pressable
       onPress={handlePress}
       disabled={isDisabled}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled: isDisabled, busy: loading }}
       style={({ pressed }) => [
         styles.base,
         sizeStyles[size],
@@ -201,5 +210,8 @@ const styles = StyleSheet.create({
     marginLeft: spacing[2],
   },
 });
+
+// Memoize to prevent unnecessary re-renders
+export const Button = React.memo(ButtonComponent);
 
 export default Button;

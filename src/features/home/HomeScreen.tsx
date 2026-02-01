@@ -33,12 +33,18 @@ import {
   RecentActivity,
   BottomNav,
 } from './components';
-import { SkeletonBalanceCard, SkeletonAccountCard } from '@components/ui';
+import {
+  SkeletonBalanceCard,
+  SkeletonAccountCard,
+  OfflineBanner,
+} from '@components/ui';
+import { useNetworkStatus } from '@hooks/useNetworkStatus';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
 export function HomeScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const { isOffline } = useNetworkStatus();
   const setUser = useAuthStore((state) => state.setUser);
   const {
     setAccounts,
@@ -132,6 +138,9 @@ export function HomeScreen() {
         barStyle="light-content"
         backgroundColor={palette.primary.main}
       />
+
+      {/* Offline Banner */}
+      <OfflineBanner isOffline={isOffline} />
 
       {/* Black Header */}
       <Header onProfilePress={handleSettingsPress} />

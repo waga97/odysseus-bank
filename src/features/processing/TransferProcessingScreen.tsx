@@ -16,6 +16,7 @@ import type { RootStackScreenProps } from '@navigation/types';
 import { formatCurrency } from '@utils/currency';
 import { mockApi } from '@services/mocks';
 import { useAccountStore } from '@stores/accountStore';
+import { withRetry } from '@utils/retry';
 
 type Props = RootStackScreenProps<'TransferProcessing'>;
 
@@ -37,6 +38,7 @@ function mapErrorToType(
   | 'insufficient_funds'
   | 'network_error'
   | 'daily_limit'
+  | 'monthly_limit'
   | 'recipient_not_found'
   | 'generic' {
   const message = error.message;
@@ -49,6 +51,9 @@ function mapErrorToType(
   }
   if (message === 'DAILY_LIMIT_EXCEEDED') {
     return 'daily_limit';
+  }
+  if (message === 'MONTHLY_LIMIT_EXCEEDED') {
+    return 'monthly_limit';
   }
   if (message === 'INVALID_ACCOUNT') {
     return 'recipient_not_found';
@@ -107,17 +112,21 @@ export function TransferProcessingScreen({ navigation, route }: Props) {
     let stepTimeout: ReturnType<typeof setTimeout>;
 
     const runProcessing = async () => {
-      // Start API call in background
-      const apiPromise = mockApi.executeTransfer({
-        amount,
-        recipientId: recipient.id,
-        recipientAccountNumber: recipient.accountNumber,
-        recipientPhoneNumber: recipient.phoneNumber,
-        recipientName: recipient.name,
-        bankName: recipient.bankName,
-        note,
-        fromAccountId: defaultAccount?.id ?? '',
-      });
+      // Start API call in background with retry for network errors
+      const apiPromise = withRetry(
+        () =>
+          mockApi.executeTransfer({
+            amount,
+            recipientId: recipient.id,
+            recipientAccountNumber: recipient.accountNumber,
+            recipientPhoneNumber: recipient.phoneNumber,
+            recipientName: recipient.name,
+            bankName: recipient.bankName,
+            note,
+            fromAccountId: defaultAccount?.id ?? '',
+          }),
+        { maxAttempts: 3, baseDelayMs: 1000 }
+      );
 
       // Step through visual progress
       for (let i = 0; i < PROCESSING_STEPS.length; i++) {
@@ -213,7 +222,7 @@ export function TransferProcessingScreen({ navigation, route }: Props) {
 
         navigation.replace('TransferError', {
           errorType,
-          errorMessage: (error as Error).message,
+          // Don't pass raw error codes - let error screen use friendly copy
         });
       }
     };

@@ -84,6 +84,7 @@ export type RootStackParamList = {
       | 'insufficient_funds'
       | 'network_error'
       | 'daily_limit'
+      | 'monthly_limit'
       | 'recipient_not_found'
       | 'duplicate_transfer'
       | 'generic';

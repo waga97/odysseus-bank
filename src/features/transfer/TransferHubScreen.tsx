@@ -3,7 +3,7 @@
  * Main transfer screen with tabs and recipient selection - warm theme
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -34,6 +34,17 @@ export function TransferHubScreen() {
 
   const [activeTab, setActiveTab] = useState<TransferTab>('bank');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Memoize filtered recipients to prevent recalculation on every render
+  const bankRecipients = useMemo(
+    () => recentRecipients.filter((r) => r.accountNumber),
+    [recentRecipients]
+  );
+
+  const mobileRecipients = useMemo(
+    () => recentRecipients.filter((r) => r.phoneNumber),
+    [recentRecipients]
+  );
 
   // Handle back press
   const handleBackPress = useCallback(() => {
@@ -84,7 +95,7 @@ export function TransferHubScreen() {
       case 'bank':
         return (
           <RecipientList
-            recipients={recentRecipients.filter((r) => r.accountNumber)}
+            recipients={bankRecipients}
             onRecipientPress={handleRecipientPress}
             searchQuery={searchQuery}
             title="Recent"
@@ -93,7 +104,7 @@ export function TransferHubScreen() {
       case 'mobile':
         return (
           <RecipientList
-            recipients={recentRecipients.filter((r) => r.phoneNumber)}
+            recipients={mobileRecipients}
             onRecipientPress={handleRecipientPress}
             searchQuery={searchQuery}
             title="Recent DuitNow"

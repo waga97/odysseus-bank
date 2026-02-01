@@ -19,7 +19,6 @@ export interface Account {
   name: string;
   accountNumber: string;
   type: 'savings' | 'current' | 'investment';
-  accountType?: 'savings' | 'checking' | 'current'; // deprecated, use 'type'
   balance: number;
   currency: string;
   isDefault: boolean;

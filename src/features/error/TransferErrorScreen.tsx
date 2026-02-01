@@ -58,6 +58,16 @@ const ERROR_CONFIGS: Record<string, ErrorConfig> = {
     primaryAction: 'Request Limit Increase',
     secondaryAction: 'Set Reminder',
   },
+  monthly_limit: {
+    icon: 'calendar',
+    iconColor: colors.status.warning,
+    iconBgColor: colors.status.warningBg,
+    title: 'Monthly Limit Reached',
+    message:
+      "You've reached your monthly transfer limit. Your limit will reset at the start of next month, or you can request a temporary increase.",
+    primaryAction: 'Request Limit Increase',
+    secondaryAction: 'Set Reminder',
+  },
   recipient_not_found: {
     icon: 'user',
     iconColor: colors.status.error,
@@ -116,6 +126,7 @@ export function TransferErrorScreen({ navigation, route }: Props) {
         navigation.goBack();
         break;
       case 'daily_limit':
+      case 'monthly_limit':
         // Show limit increase modal (for demo, go to settings)
         navigation.reset({
           index: 1,

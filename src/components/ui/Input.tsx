@@ -95,6 +95,9 @@ export const Input = forwardRef<TextInput, InputProps>(
             autoCapitalize="none"
             autoCorrect={false}
             keyboardAppearance="light"
+            accessibilityLabel={label}
+            accessibilityState={{ disabled }}
+            accessibilityHint={hint}
             {...rest}
           />
 

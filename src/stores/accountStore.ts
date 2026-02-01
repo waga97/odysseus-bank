@@ -4,6 +4,7 @@
  */
 
 import { create } from 'zustand';
+import { useShallow } from 'zustand/react/shallow';
 import type {
   Account,
   Recipient,
@@ -17,8 +18,6 @@ interface AccountState {
   accounts: Account[];
   defaultAccount: Account | null;
   recipients: Recipient[];
-  recentRecipients: Recipient[];
-  favoriteRecipients: Recipient[];
   transactions: Transaction[];
   transferLimits: TransferLimits | null;
   banks: Bank[];
@@ -65,8 +64,6 @@ const initialState = {
   accounts: [],
   defaultAccount: null,
   recipients: [],
-  recentRecipients: [],
-  favoriteRecipients: [],
   transactions: [],
   transferLimits: null,
   banks: [],
@@ -99,48 +96,19 @@ export const useAccountStore = create<AccountState>((set, get) => ({
     })),
 
   // Recipient Actions
-  setRecipients: (recipients) => {
-    const sortedByDate = [...recipients].sort((a, b) => {
-      if (!a.lastTransferDate) {
-        return 1;
-      }
-      if (!b.lastTransferDate) {
-        return -1;
-      }
-      return (
-        new Date(b.lastTransferDate).getTime() -
-        new Date(a.lastTransferDate).getTime()
-      );
-    });
-
-    set({
-      recipients,
-      recentRecipients: sortedByDate.slice(0, 10),
-      favoriteRecipients: recipients.filter((r) => r.isFavorite),
-    });
-  },
+  setRecipients: (recipients) => set({ recipients }),
 
   addRecipient: (recipient) =>
-    set((state) => {
-      const updated = [recipient, ...state.recipients];
-      return {
-        recipients: updated,
-        recentRecipients: updated.slice(0, 10),
-        favoriteRecipients: updated.filter((r) => r.isFavorite),
-      };
-    }),
+    set((state) => ({
+      recipients: [recipient, ...state.recipients],
+    })),
 
   updateRecipient: (id, updates) =>
-    set((state) => {
-      const updated = state.recipients.map((r) =>
+    set((state) => ({
+      recipients: state.recipients.map((r) =>
         r.id === id ? { ...r, ...updates } : r
-      );
-      return {
-        recipients: updated,
-        recentRecipients: updated.slice(0, 10),
-        favoriteRecipients: updated.filter((r) => r.isFavorite),
-      };
-    }),
+      ),
+    })),
 
   toggleFavorite: (id) => {
     const { recipients } = get();
@@ -255,17 +223,60 @@ export const useAccounts = () => useAccountStore((state) => state.accounts);
 export const useBalance = () =>
   useAccountStore((state) => state.defaultAccount?.balance ?? 0);
 export const useRecipients = () => useAccountStore((state) => state.recipients);
+
+/**
+ * Computed selector: Returns recipients sorted by last transfer date (most recent first)
+ * Limited to 10 items for performance
+ */
 export const useRecentRecipients = () =>
-  useAccountStore((state) => state.recentRecipients);
+  useAccountStore((state) => {
+    const sorted = [...state.recipients].sort((a, b) => {
+      if (!a.lastTransferDate) {
+        return 1;
+      }
+      if (!b.lastTransferDate) {
+        return -1;
+      }
+      return (
+        new Date(b.lastTransferDate).getTime() -
+        new Date(a.lastTransferDate).getTime()
+      );
+    });
+    return sorted.slice(0, 10);
+  });
+
+/**
+ * Computed selector: Returns only favorite recipients
+ */
 export const useFavoriteRecipients = () =>
-  useAccountStore((state) => state.favoriteRecipients);
+  useAccountStore((state) => state.recipients.filter((r) => r.isFavorite));
 export const useTransactions = () =>
   useAccountStore((state) => state.transactions);
 export const useTransferLimits = () =>
   useAccountStore((state) => state.transferLimits);
 export const useBanks = () => useAccountStore((state) => state.banks);
 export const useBalanceVisibility = () =>
-  useAccountStore((state) => ({
-    isHidden: state.isBalanceHidden,
-    toggle: state.toggleBalanceVisibility,
-  }));
+  useAccountStore(
+    useShallow((state) => ({
+      isHidden: state.isBalanceHidden,
+      toggle: state.toggleBalanceVisibility,
+    }))
+  );
+
+/**
+ * Optimized selector for multiple actions - uses shallow comparison
+ */
+export const useAccountActions = () =>
+  useAccountStore(
+    useShallow((state) => ({
+      setAccounts: state.setAccounts,
+      setRecipients: state.setRecipients,
+      setTransactions: state.setTransactions,
+      setTransferLimits: state.setTransferLimits,
+      setBanks: state.setBanks,
+      setLoading: state.setLoading,
+      updateBalance: state.updateBalance,
+      updateLimitsUsed: state.updateLimitsUsed,
+      addTransaction: state.addTransaction,
+    }))
+  );
